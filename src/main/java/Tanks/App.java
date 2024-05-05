@@ -39,7 +39,7 @@ public class App extends PApplet {
     public static Random random = new Random();
 
     public PImage bg;
-    public int level = 1;
+    public int level;
     public char[][] terrain = new char[28][20];
     public PImage tree;
     public PImage tank;
@@ -149,7 +149,7 @@ public class App extends PApplet {
 
 
     public void loadLevel(){
-        tankCount = 4;
+        tankCount = 0;
         turn = 1;
 
         for (int i = 0; i < tankArr.size(); i++){
@@ -189,19 +189,27 @@ public class App extends PApplet {
 
         tankCount = 0;
         turn = 1;
+        this.level = 1;
 
         treeArr.clear();
         tankArr.clear();
 
 
-        frameRate(FPS);
+        //Emptying old terrain array
+        for (int i = 0; i < 28; i++){
+            Arrays.fill(terrain[i], ' ');
+        }
+        
 
+
+        frameRate(FPS);
+ 
 		//See PApplet javadoc:
 		//loadJSONObject(configPath)
 
         JSONObject config = loadJSONObject(this.configPath);
         JSONArray levelArray = config.getJSONArray("levels");
-        JSONObject current_level = levelArray.getJSONObject(level-1);
+        JSONObject current_level = levelArray.getJSONObject(this.level-1);
 
         this.bg = loadImage("src/main/resources/Tanks/" + current_level.getString("background"));
         this.fg_color = current_level.getString("foreground-colour");
@@ -215,9 +223,6 @@ public class App extends PApplet {
         this.parachute.resize(32, 32);
         
         //INitializing array full of blank tanks
-        
-
-
 
         loadTerrain(current_level.getString("layout"));    
         transfer();
@@ -231,22 +236,22 @@ public class App extends PApplet {
             Tank t = null;
             switch (i) {
                 case 0:
-                    t = new Tank(0,0, terrain_new, "0,0,255", tankArr, 0, this.wind);
+                    t = new Tank(0,0, terrain_new, "0,0,255", tankArr, 0, this.wind, (char)(i + 65));
                     break;
                 case 1:
-                    t = new Tank(0,0, terrain_new, "255,0,0", tankArr, 0, this.wind);
+                    t = new Tank(0,0, terrain_new, "255,0,0", tankArr, 0, this.wind, (char)(i + 65));
                     break;
                 case 2:
-                    t = new Tank(0,0, terrain_new, "0,255,255", tankArr, 0, this.wind);
+                    t = new Tank(0,0, terrain_new, "0,255,255", tankArr, 0, this.wind, (char)(i + 65));
                     break;
                 case 3:
-                    t = new Tank(0,0, terrain_new, "255,255,0", tankArr, 0, this.wind);
+                    t = new Tank(0,0, terrain_new, "255,255,0", tankArr, 0, this.wind, (char)(i + 65));
                 case 4:
-                    t = new Tank(0,0, terrain_new, "0,255,0", tankArr, 0, this.wind);
+                    t = new Tank(0,0, terrain_new, "0,255,0", tankArr, 0, this.wind, (char)(i + 65));
                     break;
                 
                 default:
-                    t = new Tank(0,0, terrain_new, "255,255,255", tankArr, 0, this.wind);
+                    t = new Tank(0,0, terrain_new, "255,255,255", tankArr, 0, this.wind, (char)(i + 65));
             }
             tankArr.add(t);
         }
@@ -315,91 +320,109 @@ public class App extends PApplet {
      */
 	@Override
     public void keyPressed(KeyEvent event){
-        if (key == CODED){
-            if (keyCode == RIGHT){
-                tankArr.get(turn - 1).moveRight();
-            }
-
-            else if (keyCode == LEFT){
-                tankArr.get(turn - 1).moveLeft();
-            }
-
-            else if (keyCode == UP){
-                tankArr.get(turn - 1).moveTurret("right");
-            }
-            
-            else if (keyCode == DOWN){
-                tankArr.get(turn - 1).moveTurret("left");
-            }
-
-        
-        }
-        if (keyPressed && keyCode == 32){
-            if (this.tankCount <= 1){
-                if (this.level == 3){
-                    isGameOver = true;
+        if (isGameOver == false){
+            if (key == CODED){
+                if (keyCode == RIGHT){
+                    tankArr.get(turn - 1).moveRight();
                 }
-                else{
-                    this.level++;
-                    loadLevel();
+    
+                else if (keyCode == LEFT){
+                    tankArr.get(turn - 1).moveLeft();
+                }
+    
+                else if (keyCode == UP){
+                    tankArr.get(turn - 1).moveTurret("right");
                 }
                 
+                else if (keyCode == DOWN){
+                    tankArr.get(turn - 1).moveTurret("left");
+                }
+    
+            
             }
-            else{
-                tankArr.get(turn - 1).shoot();
-                tankArr.get(turn - 1).stop();
-                if (this.turn >= tankCount){
-                    this.turn = 1;
+            if (keyPressed && keyCode == 32){
+                if (this.tankCount <= 1){
+                    if (this.level == 3){
+                        isGameOver = true;
+                    }
+                    else{
+                        this.level++;
+                        loadLevel();
+                    }
+                    
                 }
                 else{
-                    this.turn++;
+                    tankArr.get(turn - 1).shoot();
+                    tankArr.get(turn - 1).stop();
+                    if (this.turn >= 4){
+                        this.turn = 1;
+                    }
+                    else{
+                        this.turn++;
+                        while (tankArr.get(turn - 1).getID() == 0){
+                            if (this.turn == 4){
+                                this.turn = 1;
+                            }
+                            else{
+                                this.turn++;
+                            }
+                            
+                        }
+                        
+                    }
+                    
+                    arrowDisplayTime = millis() + 2000;
+    
+                    int windChange = random.nextInt(11) - 5;
+                    this.wind += windChange;
                 }
-                arrowDisplayTime = millis() + 2000;
-
-                int windChange = random.nextInt(11) - 5;
-                this.wind += windChange;
+                
+    
             }
-            
-
+    
+            if (keyCode == 'W' || keyCode == 'w'){
+                tankArr.get(turn - 1).increasePower();
+            }
+    
+            if (keyCode == 'S' || keyCode == 's'){
+                tankArr.get(turn - 1).decreasePower();
+            }
+    
+            if (keyCode == 'N' || keyCode == 'n'){
+                this.level++;
+                loadLevel();
+            }
+    
+            if (keyCode == 'R' || keyCode == 'r'){
+                repairPowerUp();
+            }
+            if (keyCode == 'F' || keyCode == 'f'){
+                fuelPowerUp();
+            }
+            if (keyCode == 'P' || keyCode == 'p'){
+                parachutePowerUp();
+            }
+            if (keyCode == 'T' || keyCode == 't'){
+                teleportPowerUp();
+            }
+            if (keyCode == 'A' || keyCode == 'a'){
+                airStrikePowerUp();
+            }
         }
 
-        if (keyCode == 'W' || keyCode == 'w'){
-            tankArr.get(turn - 1).increasePower();
+        if(isGameOver){
+            if (keyCode == 'R' || keyCode == 'r'){
+                isGameOver = false;
+                setup();
+            }
         }
-
-        if (keyCode == 'S' || keyCode == 's'){
-            tankArr.get(turn - 1).decreasePower();
-        }
-
-        if (keyCode == 'N' || keyCode == 'n'){
-            this.level++;
-            loadLevel();
-        }
-
-        if (keyCode == 'R' || keyCode == 'r'){
-            repairPowerUp();
-        }
-        if (keyCode == 'F' || keyCode == 'f'){
-            fuelPowerUp();
-        }
-        if (keyCode == 'P' || keyCode == 'p'){
-            parachutePowerUp();
-        }
-        if (keyCode == 'T' || keyCode == 't'){
-            teleportPowerUp();
-        }
-        if (keyCode == 'A' || keyCode == 'a'){
-            airStrikePowerUp();
-        }
-
-
-        
     }
 
     public void removeTank(int i){
         tankArr.get(i).setID(0);
         tankCount--;
     }
+
 
     /**
      * Receive key released signal from the keyboard.
@@ -440,41 +463,7 @@ public class App extends PApplet {
     }
 
     public void tick(){
-        // if (this.isGameOver){
-        //     long currentTime = System.currentTimeMillis();
-            
-        //     if (currentTime - lastScoreDisplayTime >= scoreDisplayInterval) {
-        //         lastScoreDisplayTime = currentTime;
-                
-        //         for (int i = 0; i < 4; i++) {
-        //             if (tankArr.get(i).getID() != 0){
-        //                 String x = tankArr.get(i).getColor();
-        //                 String[] arr = x.split(",");
-                
-        //                 int a = Integer.parseInt(arr[0]);
-        //                 int b = Integer.parseInt(arr[1]);
-        //                 int c = Integer.parseInt(arr[2]);
-                
-        //                 this.fill(a,b,c);
-        //                 textSize(20);
-        //                 this.text("Player " + ((char) (tankArr.get(i).getID() + 64)) +" Wins!", 300, 100);
-                        
-        //                 textSize(12);
-        //                 stroke(0);
-        //                 strokeWeight(3);
-        //                 this.fill(a-59, b-50, c+50);
-        //                 rect(200, 150, 400, 200);
-        //                 line(200, 200, 600, 200);
-                
-        //                 for (int j = 0; j < 4; j = j){
-        //                     this.fill(0,0,0);
-        //                     this.text("hey", 250, 200 + (j * 50));
-        //                 }
-                        
-        //             }
-        //         }
-        //     }
-        // }
+        
     }
 
     public void endGameScreen(){
@@ -545,45 +534,6 @@ public class App extends PApplet {
         
     }
 
-    // public void removeBlankTanks(){
-    //     for (int i = 0; i < tankArr.size(); i ++){
-    //         if (tankArr.get(i).getID() == 0){
-    //             tankArr.remove(i);
-    //         }
-    //     }
-    // }
-
-
-    /**xs
-     * Draw all elements in the game by current frame.
-     */
-
-     // Error here needs to be fixedddddd where it goes out of bounds
-
-    // private String[] words = {"Hello", "world", "this", "is", "a", "test"};
-    // private int currentIndex = 0;
-    // private long lastWordTime = 0;
-    // private long wordInterval = 700; // Interval between words in milliseconds
-    // private ArrayList<String> displayedWords = new ArrayList<>();
-
-
-    // private void displayWords() {
-    //     if (currentIndex < words.length) {
-    //         if (millis() - lastWordTime > wordInterval) {
-    //             displayedWords.add(words[currentIndex]);
-    //             lastWordTime = millis();
-    //             currentIndex++;
-    //         }
-    //     }
-
-    //     fill(0);
-    //     textSize(24);
-    //     for (int i = 0; i < displayedWords.size(); i++) {
-    //         text(displayedWords.get(i), width / 2, height / 2 + i * 30);
-    //     }
-    //     textSize(12);
-    // }
-
     int currentIndex = 0;
     long lastWordTime = 0;
     long wordInterval = 700; // Interval between words in milliseconds
@@ -625,10 +575,12 @@ public class App extends PApplet {
             int c = Integer.parseInt(x[2]);
         
             this.fill(a,b,c);
-            text("Player " + (char)(displayedTanks.get(i).getID() + 64), 220, 170 + i * 30);
+            text("Player " + (displayedTanks.get(i).getName()), 220, 170 + i * 30);
             this.fill(0,0,0);
             text(displayedTanks.get(i).getScore(), 550, 170 + i * 30);
         }
+
+        text("Press R to restart game", 270, 320);
 
         this.textSize(12);
         this.noStroke();
@@ -643,6 +595,11 @@ public class App extends PApplet {
         drawTerrain(this.fg_color);
 
         // displayScore();
+        if (isGameOver){
+            displayScore();            
+        }
+
+       
 
         if (teleport_status){
             textSize(20);
@@ -739,6 +696,8 @@ public class App extends PApplet {
             this.image(this.wind_right, 600, 10);
         }
         text(this.wind, 645, 30);
+
+        text(tankCount, 300,300);
 
         //ScoreBoard
         stroke(0);

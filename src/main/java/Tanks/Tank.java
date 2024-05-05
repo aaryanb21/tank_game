@@ -27,9 +27,10 @@ public class Tank{
     private boolean parachuteDeployed;
     private int fallDamage;
     private int scoreToBeUpdated;
+    private char name;
 
 
-    public Tank(int x, int y, int[] terrain_new, String color, ArrayList<Tank> tanks, int tankID, int wind){
+    public Tank(int x, int y, int[] terrain_new, String color, ArrayList<Tank> tanks, int tankID, int wind, char name){
         this.x = x;
         this.y = y;
         this.xVel = 0;
@@ -42,12 +43,13 @@ public class Tank{
         this.terrain_new = terrain_new;
         this.color = color;
         this.tanks = tanks;
-        this.score = 50;
+        this.score = 0;
         this.tankID = tankID;
-        this.wind = wind; 
+        this.wind = 0; 
         this.parachutes = 3;
         this.parachuteDeployed = false;
         this.fallDamage = 0;
+        this.name = name;
     }
 
     public void setup(){
@@ -311,10 +313,16 @@ public class Tank{
         this.rotateAngle = 0;
         this.rotateAngleVel = 0;
         this.fuel = 250;
+        this.bullets.clear();
+        this.e = null;
     }
 
     public void incrementParachute(){
         this.parachutes++;
+    }
+
+    public char getName(){
+        return this.name;
     }
 
 
