@@ -51,17 +51,17 @@ public class App extends PApplet {
     public int turn;
     public long arrowDisplayTime;
     public int tankCount; 
-    public boolean isGameOver;
 
     public int[] terrain_new = new int[896];
     public ArrayList<Tank> tankArr = new ArrayList<Tank>();
     public ArrayList<Tree> treeArr = new ArrayList<Tree>();
-    public int[] scoreArr = new int[9];
 
     private int wind = random.nextInt(71) - 35;
 
-    private long lastScoreDisplayTime = 0;
-    private long scoreDisplayInterval = 700; // 0.7 seconds in milliseconds
+
+    public boolean teleport_status = false;
+    public boolean airStrikeStatus = false;
+    public boolean isGameOver = false;
 
 
 	
@@ -146,6 +146,44 @@ public class App extends PApplet {
     /**
      * Load all resources such as images. Initialise the elements such as the player and map elements.
      */
+
+
+    public void loadLevel(){
+        tankCount = 4;
+        turn = 1;
+
+        for (int i = 0; i < tankArr.size(); i++){
+            tankArr.get(i).resetValues();
+        }
+
+        treeArr.clear();
+
+        JSONObject config = loadJSONObject(this.configPath);
+        JSONArray levelArray = config.getJSONArray("levels");
+        JSONObject current_level = levelArray.getJSONObject(level-1);
+
+
+        this.bg = loadImage("src/main/resources/Tanks/" + current_level.getString("background"));
+        this.fg_color = current_level.getString("foreground-colour");
+        this.tree = loadImage("src/main/resources/Tanks/" + current_level.getString("trees", "tree1.png"));
+
+        loadTerrain(current_level.getString("layout"));    
+        transfer();
+        smoothTerrain();
+        smoothTerrain();
+        arrowDisplayTime = millis() + 2000;
+        INITIAL_TANK_COUNT = this.tankCount;
+
+        drawSprites();
+        for (int i = 0; i < tankArr.size(); i++){
+            if (tankArr.get(i).getID() != 0){
+                tankCount++;
+            }
+        }
+    }
+
+
+    
 	@Override
     public void setup() {
 
@@ -168,7 +206,6 @@ public class App extends PApplet {
         this.bg = loadImage("src/main/resources/Tanks/" + current_level.getString("background"));
         this.fg_color = current_level.getString("foreground-colour");
         this.tree = loadImage("src/main/resources/Tanks/" + current_level.getString("trees", "tree1.png"));
-        this.tank = loadImage("src/main/resources/Tanks/tank3.png");
         this.fuel = loadImage("src/main/resources/Tanks/fuel.png");
         this.wind_left = loadImage("src/main/resources/Tanks/wind-1.png");
         this.wind_left.resize(32, 32);
@@ -176,7 +213,6 @@ public class App extends PApplet {
         this.wind_right.resize(32, 32);
         this.parachute = loadImage("src/main/resources/Tanks/parachute.png");
         this.parachute.resize(32, 32);
-        this.isGameOver = false;
         
         //INitializing array full of blank tanks
         
@@ -249,6 +285,31 @@ public class App extends PApplet {
 
     }
 
+    public void parachutePowerUp(){
+        int score = tankArr.get(turn - 1).getScore();
+        if (score >= 15){
+            tankArr.get(turn - 1).incrementParachute();
+            tankArr.get(turn - 1).setScore(score - 15);
+        }
+    }
+
+    public void teleportPowerUp(){
+        int score = tankArr.get(turn - 1).getScore();
+        if (score >= 15){
+            tankArr.get(turn - 1).setScore(score - 15);
+            teleport_status = true;
+        }
+
+    }
+
+    public void airStrikePowerUp(){
+        int score = tankArr.get(turn - 1).getScore();
+        if (score >= 50){
+            tankArr.get(turn - 1).setScore(score - 50);
+            airStrikeStatus = true;
+        }
+    }
+
     /**
      * Receive key pressed signal from the keyboard.
      */
@@ -275,16 +336,14 @@ public class App extends PApplet {
         }
         if (keyPressed && keyCode == 32){
             if (this.tankCount <= 1){
-                // if (this.level == 3){
-                //     endGameScreen();
-                // }
-    
-                // else{
-                //     this.level++;
-                // }
-                // setup();
-                this.isGameOver = true;
-
+                if (this.level == 3){
+                    isGameOver = true;
+                }
+                else{
+                    this.level++;
+                    loadLevel();
+                }
+                
             }
             else{
                 tankArr.get(turn - 1).shoot();
@@ -313,8 +372,8 @@ public class App extends PApplet {
         }
 
         if (keyCode == 'N' || keyCode == 'n'){
-            ;
-
+            this.level++;
+            loadLevel();
         }
 
         if (keyCode == 'R' || keyCode == 'r'){
@@ -323,8 +382,14 @@ public class App extends PApplet {
         if (keyCode == 'F' || keyCode == 'f'){
             fuelPowerUp();
         }
+        if (keyCode == 'P' || keyCode == 'p'){
+            parachutePowerUp();
+        }
         if (keyCode == 'T' || keyCode == 't'){
-            ;
+            teleportPowerUp();
+        }
+        if (keyCode == 'A' || keyCode == 'a'){
+            airStrikePowerUp();
         }
 
 
@@ -332,7 +397,6 @@ public class App extends PApplet {
     }
 
     public void removeTank(int i){
-        scoreArr[i] = tankArr.get(i).getScore();
         tankArr.get(i).setID(0);
         tankCount--;
     }
@@ -358,6 +422,20 @@ public class App extends PApplet {
     @Override
     public void mousePressed(MouseEvent e) {
         // TODO - powerups, like repair and extra fuel and teleport
+        if (teleport_status){
+            int x = mouseX;
+
+            tankArr.get(turn - 1).x = x;
+            tankArr.get(turn - 1).y = terrain_new[x];
+            teleport_status = false;
+        }
+
+        if(airStrikeStatus){
+            int x = mouseX;
+
+            tankArr.get(turn - 1).airStrikePowerUp(x);
+            airStrikeStatus = false;
+        }
         
     }
 
@@ -460,7 +538,6 @@ public class App extends PApplet {
                     tankArr.get((int) terrain[x][y] - 65).x = x_pixel;
                     tankArr.get((int) terrain[x][y] - 65).y = terrain_new[x_pixel];
                     tankArr.get((int) terrain[x][y] - 65).setID((int) terrain[x][y] - 65 + 1);
-                    tankArr.get((int) terrain[x][y] - 65).setScore(scoreArr[(int) terrain[x][y] - 65]);
                 }
                
             }
@@ -511,26 +588,25 @@ public class App extends PApplet {
     long lastWordTime = 0;
     long wordInterval = 700; // Interval between words in milliseconds
     ArrayList<String> words = new ArrayList<>();
-    ArrayList<String> displayedWords = new ArrayList<>();
+    ArrayList<Tank> displayedTanks = new ArrayList<>();
 
 
     public void displayScore(){
-       
-        
+               
         this.fill(100,100,100);
         this.stroke(2);
-        rect(200, 100, 450,180);
+        rect(200, 100, 400,180);
         this.fill(0,0,0);
-        this.line(200, 140, 650, 140);
+        this.line(200, 140, 600, 140);
         this.textSize(24);
         text("Final Scores", 220, 130);
+
+        
 
         if (currentIndex < 4){
 
             if (millis() - lastWordTime > wordInterval) {
-                displayedWords.add("Player " + (char)(tankArr.get(currentIndex).getID() + 64));
-
-                
+                displayedTanks.add(tankArr.get(currentIndex));
                 lastWordTime = millis();
                 currentIndex++;
             }
@@ -538,18 +614,20 @@ public class App extends PApplet {
         }
         fill(0);
         this.textSize(24);
-        for (int i = 0; i < displayedWords.size(); i++) {
+        for (int i = 0; i < displayedTanks.size(); i++) {
 
             String color = tankArr.get(i).getColor();
-            String[] arr = color.split(",");
+            String[] x = color.split(",");
         
 
-            int a = Integer.parseInt(arr[0]);
-            int b = Integer.parseInt(arr[1]);
-            int c = Integer.parseInt(arr[2]);
+            int a = Integer.parseInt(x[0]);
+            int b = Integer.parseInt(x[1]);
+            int c = Integer.parseInt(x[2]);
         
             this.fill(a,b,c);
-            text(displayedWords.get(i), 220, 170 + i * 30);
+            text("Player " + (char)(displayedTanks.get(i).getID() + 64), 220, 170 + i * 30);
+            this.fill(0,0,0);
+            text(displayedTanks.get(i).getScore(), 550, 170 + i * 30);
         }
 
         this.textSize(12);
@@ -564,7 +642,21 @@ public class App extends PApplet {
         this.image(this.bg,0,0);
         drawTerrain(this.fg_color);
 
-        displayScore();
+        // displayScore();
+
+        if (teleport_status){
+            textSize(20);
+            fill(0,0,0);
+            text("SELECT X VALUE TO TELEPORT TO", 270, 200);
+            textSize(12);
+        }
+
+        if (airStrikeStatus){
+            textSize(20);
+            fill(0,0,0);
+            text("SELECT X VALUE TO LAUNCH AIRSTRIKE AT", 220, 200);
+            textSize(12);
+        }
 
         
 
@@ -610,14 +702,34 @@ public class App extends PApplet {
         text(tankArr.get(turn - 1).getParachutes(), 190, 35);
         
         
-        //Health Bar
-        text("Health:", 400, 30);
-        text(tankArr.get(turn - 1).getHealth(), 450, 30);
+        //Health and power Bar
+        text("Health:", 350, 30);
+        String color = tankArr.get(turn - 1).getColor();
+        String[] arr = color.split(",");
+        stroke(0,0,0);
+        strokeWeight(2);
+        line(400, 15, 500, 15);
+        line(400, 35, 500, 35);
+        line(400, 15, 400, 35);
+        line(500, 15, 500, 35);
+
+
+        int a = Integer.parseInt(arr[0]);
+        int b = Integer.parseInt(arr[1]);
+        int c = Integer.parseInt(arr[2]);
+        this.fill(a,b,c);
+
+        rect(400, 15, 100 * tankArr.get(turn - 1).getHealth() / 100, 20);
+
+        line(400 + (tankArr.get(turn - 1).getPower()), 15, 400 + (tankArr.get(turn - 1).getPower()), 35);
+        
+        this.fill(0,0,0);
+        text(tankArr.get(turn - 1).getHealth(), 510, 30);
 
         //Power Bar
-        text("Power:", 500, 30);
+        text("Power:", 350, 60);
         // text(tankArr.get(turn - 1).getPower(), 550, 30);
-        text((int)tankArr.get(turn - 1).getPower(), 550, 30);
+        text((int)tankArr.get(turn - 1).getPower(), 400, 60);
 
         //Wind Speed
         if (this.wind < 0){
@@ -626,7 +738,7 @@ public class App extends PApplet {
         else{
             this.image(this.wind_right, 600, 10);
         }
-        text(this.wind, 650, 30);
+        text(this.wind, 645, 30);
 
         //ScoreBoard
         stroke(0);
@@ -641,14 +753,14 @@ public class App extends PApplet {
         for (int i = 0; i < 4; i++){
 
             String x = tankArr.get(i).getColor();
-            String[] arr = x.split(",");
+            String[] y = x.split(",");
         
 
-            int a = Integer.parseInt(arr[0]);
-            int b = Integer.parseInt(arr[1]);
-            int c = Integer.parseInt(arr[2]);
+            int d = Integer.parseInt(y[0]);
+            int e = Integer.parseInt(y[1]);
+            int f = Integer.parseInt(y[2]);
     
-            this.fill(a,b,c);
+            this.fill(d,e,f);
 
             text("Player " + (char)(i+65), 710, 80 + i * 20);
             this.fill(0,0,0);
@@ -656,17 +768,6 @@ public class App extends PApplet {
         }
 
 
-        // text("Player 1", 710, 80);
-        // text(tankArr.get(0).getScore(), 800, 80);
-        
-        // text("Player 2", 710, 100);
-        // text(tankArr.get(1).getScore(), 800, 100);
-        
-        // text("Player 3", 710, 120);
-        // text(tankArr.get(2).getScore(), 800, 120);
-        
-        // text("Player 4", 710, 140);
-        // text(tankArr.get(3).getScore(), 800, 140);
 
         //Arrow Over Tank
         if (millis() < arrowDisplayTime){
@@ -680,6 +781,7 @@ public class App extends PApplet {
             line(arrowEndX-20, arrowEndY -20, arrowEndX, arrowEndY);
             line(arrowEndX+20, arrowEndY -20, arrowEndX, arrowEndY);
         }
+
 
         
         this.tick();

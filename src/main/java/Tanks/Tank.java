@@ -42,13 +42,12 @@ public class Tank{
         this.terrain_new = terrain_new;
         this.color = color;
         this.tanks = tanks;
-        this.score = 0;
+        this.score = 50;
         this.tankID = tankID;
-        this.wind = wind;
+        this.wind = wind; 
         this.parachutes = 3;
         this.parachuteDeployed = false;
         this.fallDamage = 0;
-        this.scoreToBeUpdated = 0;
     }
 
     public void setup(){
@@ -117,7 +116,6 @@ public class Tank{
             this.parachuteDeployed = false;
             this.y = this.terrain_new[this.x];
             this.health -= this.fallDamage;
-            this.scoreToBeUpdated += this.fallDamage;
             this.fallDamage = 0;
         }
                 
@@ -209,6 +207,9 @@ public class Tank{
 
     public void shoot(){
         bullets.add(new Bullet(this.x + 9 - 5, this.y - 5, this.power, Math.abs(this.rotateAngle - 90 + 3), this.terrain_new, this.color, this.tanks, this.tankID, this.wind));
+    }
+    public void airStrikePowerUp(int x){
+        bullets.add(new Bullet(x, 5, 50, 270, this.terrain_new, this.color, this.tanks, this.tankID, this.wind));
     }
 
     public void updateBullets(PApplet app) {
@@ -302,6 +303,18 @@ public class Tank{
 
     public void setScoreToBeUpdated(int x){
         this.scoreToBeUpdated = x;
+    }
+
+    public void resetValues(){
+        this.health = 100;
+        this.power = 50;
+        this.rotateAngle = 0;
+        this.rotateAngleVel = 0;
+        this.fuel = 250;
+    }
+
+    public void incrementParachute(){
+        this.parachutes++;
     }
 
 

@@ -132,8 +132,6 @@ public class Bullet{
                 tanks.setHealth(newHealth);
                 if (tanks.getID() != this.bulletID){
                     this.score += damage;
-                    this.score += tanks.getScoreToBeUpdated();
-                    tanks.setScoreToBeUpdated(0);
                 }
                 
             }
