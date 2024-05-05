@@ -482,12 +482,89 @@ public class App extends PApplet {
      */
 
      // Error here needs to be fixedddddd where it goes out of bounds
+
+    // private String[] words = {"Hello", "world", "this", "is", "a", "test"};
+    // private int currentIndex = 0;
+    // private long lastWordTime = 0;
+    // private long wordInterval = 700; // Interval between words in milliseconds
+    // private ArrayList<String> displayedWords = new ArrayList<>();
+
+
+    // private void displayWords() {
+    //     if (currentIndex < words.length) {
+    //         if (millis() - lastWordTime > wordInterval) {
+    //             displayedWords.add(words[currentIndex]);
+    //             lastWordTime = millis();
+    //             currentIndex++;
+    //         }
+    //     }
+
+    //     fill(0);
+    //     textSize(24);
+    //     for (int i = 0; i < displayedWords.size(); i++) {
+    //         text(displayedWords.get(i), width / 2, height / 2 + i * 30);
+    //     }
+    //     textSize(12);
+    // }
+
+    int currentIndex = 0;
+    long lastWordTime = 0;
+    long wordInterval = 700; // Interval between words in milliseconds
+    ArrayList<String> words = new ArrayList<>();
+    ArrayList<String> displayedWords = new ArrayList<>();
+
+
+    public void displayScore(){
+       
+        
+        this.fill(100,100,100);
+        this.stroke(2);
+        rect(200, 100, 450,180);
+        this.fill(0,0,0);
+        this.line(200, 140, 650, 140);
+        this.textSize(24);
+        text("Final Scores", 220, 130);
+
+        if (currentIndex < 4){
+
+            if (millis() - lastWordTime > wordInterval) {
+                displayedWords.add("Player " + (char)(tankArr.get(currentIndex).getID() + 64));
+
+                
+                lastWordTime = millis();
+                currentIndex++;
+            }
+        
+        }
+        fill(0);
+        this.textSize(24);
+        for (int i = 0; i < displayedWords.size(); i++) {
+
+            String color = tankArr.get(i).getColor();
+            String[] arr = color.split(",");
+        
+
+            int a = Integer.parseInt(arr[0]);
+            int b = Integer.parseInt(arr[1]);
+            int c = Integer.parseInt(arr[2]);
+        
+            this.fill(a,b,c);
+            text(displayedWords.get(i), 220, 170 + i * 30);
+        }
+
+        this.textSize(12);
+        this.noStroke();
+    }
+    
+
 	@Override
     public void draw() {
 
 
         this.image(this.bg,0,0);
         drawTerrain(this.fg_color);
+
+        displayScore();
 
         
 
@@ -573,7 +650,7 @@ public class App extends PApplet {
     
             this.fill(a,b,c);
 
-            text("Player " + (i+1), 710, 80 + i * 20);
+            text("Player " + (char)(i+65), 710, 80 + i * 20);
             this.fill(0,0,0);
             text(tankArr.get(i).getScore(), 800, 80 + i * 20);
         }
