@@ -28,6 +28,7 @@ public class Tank{
     private int fallDamage;
     private int scoreToBeUpdated;
     private char name;
+    private Tank fellBy;
 
 
     public Tank(int x, int y, int[] terrain_new, String color, ArrayList<Tank> tanks, int tankID, int wind, char name){
@@ -117,7 +118,13 @@ public class Tank{
         else{
             this.parachuteDeployed = false;
             this.y = this.terrain_new[this.x];
+            if (this.fallDamage > this.health){
+                this.fallDamage = this.health;
+            }
             this.health -= this.fallDamage;
+            if (this.fellBy != null && this.fellBy.getID() != this.tankID){
+                this.fellBy.setScore(this.fellBy.getScore() + fallDamage);
+            }
             this.fallDamage = 0;
         }
                 
@@ -325,7 +332,9 @@ public class Tank{
         return this.name;
     }
 
-
+    public void setFellBy(Tank t){
+        this.fellBy = t;
+    }
 
 
 }

@@ -125,16 +125,24 @@ public class Bullet{
     public void updateTankHealth(int x, int y){
         for (Tank tanks : this.tanks){
             if (dist((int)this.x, (int)this.y, tanks.x, tanks.y) <= 30){
-                int test1 = tanks.x;
-                int test2 = tanks.y;
                 int damage = 60 - (2 * (int)dist((int)this.x, (int)this.y, tanks.x + 4 , tanks.y));
                 int newHealth = tanks.getHealth() - damage;
                 tanks.setHealth(newHealth);
                 if (tanks.getID() != this.bulletID){
                     this.score += damage;
                 }
-                
             }
+            if (Math.abs(this.x - tanks.x) <= 30){
+                Tank t = null;
+                for (int i = 0; i < this.tanks.size(); i++){
+                    if (this.bulletID == this.tanks.get(i).getID()){
+                        t = this.tanks.get(i);
+                    }
+                }
+                tanks.setFellBy(t);
+            }
+            
+            
          }
     }
 

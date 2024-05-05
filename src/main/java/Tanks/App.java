@@ -421,6 +421,7 @@ public class App extends PApplet {
     public void removeTank(int i){
         tankArr.get(i).setID(0);
         tankCount--;
+        turn++;
     }
 
 
@@ -537,7 +538,6 @@ public class App extends PApplet {
     int currentIndex = 0;
     long lastWordTime = 0;
     long wordInterval = 700; // Interval between words in milliseconds
-    ArrayList<String> words = new ArrayList<>();
     ArrayList<Tank> displayedTanks = new ArrayList<>();
 
 
@@ -697,7 +697,6 @@ public class App extends PApplet {
         }
         text(this.wind, 645, 30);
 
-        text(tankCount, 300,300);
 
         //ScoreBoard
         stroke(0);
