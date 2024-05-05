@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 import processing.core.PApplet;
 
-public class Tank{
+public class Tank implements Comparable<Tank>{
     public int x;
     public int y;
     private int xVel;
@@ -55,6 +55,10 @@ public class Tank{
 
     public void setup(){
         ;
+    }
+
+    public int compareTo(Tank t){
+        return Integer.compare(this.score, t.getScore());
     }
 
     public void tick(PApplet app){
@@ -145,11 +149,11 @@ public class Tank{
         int c = Integer.parseInt(arr[2]);
 
         app.fill(a, b, c);
-        app.rect(this.x - 5, this.y - 1, 18, 6);
-        app.rect(this.x+4 - 5,this.y-6 - 1, 9, 6);
+        app.rect(this.x - 7, this.y - 1, 18, 6);
+        app.rect(this.x+4 - 7,this.y-6 - 1, 9, 6);
         
         //Turret
-        app.translate(this.x+9 - 5, this.y-3 - 1);
+        app.translate(this.x+9 - 7, this.y-3 - 1);
         app.rotate(PApplet.radians(this.rotateAngle));
         app.fill(0,0,0);
         app.rect(-2,-15,4,15);
@@ -215,7 +219,7 @@ public class Tank{
     }
 
     public void shoot(){
-        bullets.add(new Bullet(this.x + 9 - 5, this.y - 5, this.power, Math.abs(this.rotateAngle - 90 + 3), this.terrain_new, this.color, this.tanks, this.tankID, this.wind));
+        bullets.add(new Bullet(this.x + 9 - 7, this.y - 5, this.power, Math.abs(this.rotateAngle - 90 + 3), this.terrain_new, this.color, this.tanks, this.tankID, this.wind));
     }
     public void airStrikePowerUp(int x){
         bullets.add(new Bullet(x, 5, 50, 270, this.terrain_new, this.color, this.tanks, this.tankID, this.wind));

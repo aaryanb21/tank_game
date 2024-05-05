@@ -187,12 +187,15 @@ public class App extends PApplet {
 	@Override
     public void setup() {
 
+
+        currentIndex = 0;
         tankCount = 0;
         turn = 1;
         this.level = 1;
 
         treeArr.clear();
         tankArr.clear();
+        displayedTanks.clear();
 
 
         //Emptying old terrain array
@@ -538,12 +541,24 @@ public class App extends PApplet {
     int currentIndex = 0;
     long lastWordTime = 0;
     long wordInterval = 700; // Interval between words in milliseconds
+    
     ArrayList<Tank> displayedTanks = new ArrayList<>();
-
+    
 
     public void displayScore(){
-               
-        this.fill(100,100,100);
+        ArrayList<Tank> sortedTanks = new ArrayList<>(tankArr);
+
+        Collections.sort(sortedTanks);   
+        String colour = sortedTanks.get(sortedTanks.size() - 1).getColor();
+            String[] z = colour.split(",");
+        
+
+            int A = Integer.parseInt(z[0]);
+            int B = Integer.parseInt(z[1]);
+            int C = Integer.parseInt(z[2]);
+        
+        this.fill(A - 50,B - 50,C + 50, 170);    
+        
         this.stroke(2);
         rect(200, 100, 400,180);
         this.fill(0,0,0);
@@ -556,7 +571,7 @@ public class App extends PApplet {
         if (currentIndex < 4){
 
             if (millis() - lastWordTime > wordInterval) {
-                displayedTanks.add(tankArr.get(currentIndex));
+                displayedTanks.add(sortedTanks.get(sortedTanks.size() - 1 - currentIndex));
                 lastWordTime = millis();
                 currentIndex++;
             }
@@ -566,7 +581,7 @@ public class App extends PApplet {
         this.textSize(24);
         for (int i = 0; i < displayedTanks.size(); i++) {
 
-            String color = tankArr.get(i).getColor();
+            String color = displayedTanks.get(i).getColor();
             String[] x = color.split(",");
         
 
@@ -646,6 +661,13 @@ public class App extends PApplet {
         }
 
         this.fill(0,0,0);
+
+        //PowerUp Descriptions
+        text("Repair Tank - 20 Points", 20, 50);
+        text("Buy Fuel - 10 Points", 20, 70);
+        text("Buy Parachute - 15 Points", 20, 90);
+        text("Teleport - 15 Points", 20, 110);
+        text("Launch AirStrike - 50 Points", 20, 130);
 
         //Which player's turn
         text("Player " + (char) (turn + 64) + "'s turn", 20, 30);
