@@ -46,7 +46,7 @@ public class Tank implements Comparable<Tank>{
         this.tanks = tanks;
         this.score = 0;
         this.tankID = tankID;
-        this.wind = 0; 
+        this.wind = wind; 
         this.parachutes = 3;
         this.parachuteDeployed = false;
         this.fallDamage = 0;
@@ -338,6 +338,10 @@ public class Tank implements Comparable<Tank>{
 
     public void setFellBy(Tank t){
         this.fellBy = t;
+    }
+
+    public void setWind(int w){
+        this.wind = w;
     }
 
 

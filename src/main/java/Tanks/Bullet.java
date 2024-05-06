@@ -40,7 +40,7 @@ public class Bullet{
         this.color = color;
         this.tanks = tanks;
         this.bulletID = bulletID;
-        this.wind = wind;
+        this.wind = 0;
         
     }
 
@@ -49,7 +49,7 @@ public class Bullet{
         this.x += this.xVel;
         this.y -= this.yVel;
 
-        this.xVel += + ((this.wind * 0.03) / 30);
+        this.xVel += + ((this.wind * 0.03)/30);
         this.yVel -= 0.2;
 
         if (this.hasHitGround()){
