@@ -40,7 +40,7 @@ public class Bullet{
         this.color = color;
         this.tanks = tanks;
         this.bulletID = bulletID;
-        this.wind = 0;
+        this.wind = wind;
         
     }
 

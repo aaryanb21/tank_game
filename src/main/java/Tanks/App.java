@@ -32,7 +32,6 @@ public class App extends PApplet {
 
     public static final int FPS = 30;
 
-    public static int INITIAL_TANK_COUNT;
 
     public String configPath;
 
@@ -51,6 +50,7 @@ public class App extends PApplet {
     public int turn;
     public long arrowDisplayTime;
     public int tankCount; 
+    public int initialTankCount;
 
     public int[] terrain_new = new int[896];
     public ArrayList<Tank> tankArr = new ArrayList<Tank>();
@@ -63,6 +63,7 @@ public class App extends PApplet {
     public boolean airStrikeStatus = false;
     public boolean isGameOver = false;
     public boolean showPowerUp = false;
+    public Explosion e = null;
 
 
 	
@@ -174,7 +175,6 @@ public class App extends PApplet {
         smoothTerrain();
         smoothTerrain();
         arrowDisplayTime = millis() + 2000;
-        INITIAL_TANK_COUNT = this.tankCount;
 
         drawSprites();
         for (int i = 0; i < tankArr.size(); i++){
@@ -192,6 +192,7 @@ public class App extends PApplet {
 
         currentIndex = 0;
         tankCount = 0;
+        initialTankCount = 0;
         turn = 1;
         this.level = 1;
 
@@ -234,7 +235,6 @@ public class App extends PApplet {
         smoothTerrain();
         smoothTerrain();
         arrowDisplayTime = millis() + 2000;
-        INITIAL_TANK_COUNT = this.tankCount;
 
 
         for (int i = 0; i < 9; i++){
@@ -251,12 +251,17 @@ public class App extends PApplet {
                     break;
                 case 3:
                     t = new Tank(0,0, terrain_new, "255,255,0", tankArr, 0, this.wind, (char)(i + 65));
+                    break;
                 case 4:
                     t = new Tank(0,0, terrain_new, "0,255,0", tankArr, 0, this.wind, (char)(i + 65));
                     break;
                 
                 default:
-                    t = new Tank(0,0, terrain_new, "255,255,255", tankArr, 0, this.wind, (char)(i + 65));
+                    int randomR = random.nextInt(256);
+                    int randomG = random.nextInt(256);
+                    int randomB = random.nextInt(256);
+                    String c = Integer.toString(randomR) + "," + Integer.toString(randomG) + "," + Integer.toString(randomB);
+                    t = new Tank(0,0, terrain_new, c, tankArr, 0, this.wind, (char)(i + 65));
             }
             tankArr.add(t);
         }
@@ -266,6 +271,7 @@ public class App extends PApplet {
         for (int i = 0; i < tankArr.size(); i++){
             if (tankArr.get(i).getID() != 0){
                 tankCount++;
+                initialTankCount++;
             }
         }
     
@@ -360,19 +366,19 @@ public class App extends PApplet {
                     tankArr.get(turn - 1).shoot();
                     tankArr.get(turn - 1).stopTurret();
                     tankArr.get(turn - 1).stop();
-                    if (this.turn >= 4){
+                    if (this.turn >= initialTankCount){
                         this.turn = 1;
                     }
                     else{
                         this.turn++;
-                        while (tankArr.get(turn - 1).getID() == 0){
-                            if (this.turn == 4){
-                                this.turn = 1;
-                            }
-                            else{
-                                this.turn++;
-                            }
-                            
+                        
+                    }
+                    while (tankArr.get(turn - 1).getID() == 0){
+                        if (this.turn == initialTankCount){
+                            this.turn = 1;
+                        }
+                        else{
+                            this.turn++;
                         }
                         
                     }
@@ -479,6 +485,10 @@ public class App extends PApplet {
     }
 
     public void tick(){
+    if (e != null && e.isFinished() == false){
+        e.update();
+        e.draw(this);
+    }
         
     }
 
@@ -553,20 +563,21 @@ public class App extends PApplet {
     public void displayScore(){
         ArrayList<Tank> sortedTanks = new ArrayList<>();
         for (int i = 0; i < tankArr.size(); i++){
-            if ((int)(tankArr.get(i).getName()) >= 65 && (int)(tankArr.get(i).getName()) <= 68){
+            if ((int)(tankArr.get(i).getName()) >= 65 && (int)(tankArr.get(i).getName()) <= 65 + initialTankCount - 1){
                 sortedTanks.add(tankArr.get(i));
             }
 
         }
         Collections.sort(sortedTanks);   
         this.textSize(24);
-        this.text("Player " + sortedTanks.get(sortedTanks.size() - 1).getName() + " wins!", 270, 130);
+        setColor(sortedTanks.get(sortedTanks.size() - 1).getColor());
+        this.text("Player " + sortedTanks.get(sortedTanks.size() - 1).getName() + " wins!", 330, 130);
         this.textSize(12);
 
         setColorLight(sortedTanks.get(sortedTanks.size() - 1).getColor()); 
         
         this.stroke(2);
-        rect(200, 150, 400,180);
+        rect(200, 150, 400,40 + (35 * initialTankCount));
         this.fill(0,0,0);
         this.line(200, 190, 600, 190);
         this.textSize(24);
@@ -574,7 +585,7 @@ public class App extends PApplet {
 
         
 
-        if (currentIndex < 4){
+        if (currentIndex < initialTankCount){
 
             if (millis() - lastWordTime > wordInterval) {
                 displayedTanks.add(sortedTanks.get(sortedTanks.size() - 1 - currentIndex));
@@ -594,7 +605,7 @@ public class App extends PApplet {
             text(displayedTanks.get(i).getScore(), 550, 220 + i * 30);
         }
 
-        text("Press R to restart game", 270, 370);
+        text("Press R to restart game", 270, 220 + (35 * initialTankCount));
 
         this.textSize(12);
         this.noStroke();
@@ -657,6 +668,7 @@ public class App extends PApplet {
                 //Checking if tank is dead
                 if (tankArr.get(i).getHealth() <= 0){
                     tankArr.get(i).explode();
+                    e = new Explosion(tankArr.get(i).x, tankArr.get(i).y);
                     removeTank(i);
                 }
             }
@@ -754,13 +766,13 @@ public class App extends PApplet {
         stroke(0);
         strokeWeight(3);
         line(700, 30, 850, 30);
-        line(700, 150, 850, 150);
-        line(700, 30, 700, 150);
-        line(850, 30, 850, 150);
+        line(700, 30 + (30 * initialTankCount), 850, 30 + (30 * initialTankCount));
+        line(700, 30, 700, 30 + (30 * initialTankCount));
+        line(850, 30, 850, 30 + (30 * initialTankCount));
         text("Scores", 710, 50);
         line(700, 60, 850, 60);
 
-        for (int i = 0; i < 4; i++){
+        for (int i = 0; i < initialTankCount; i++){
 
             setColor(tankArr.get(i).getColor());
 
