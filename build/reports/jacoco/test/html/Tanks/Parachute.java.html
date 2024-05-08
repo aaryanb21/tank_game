@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Parachute.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">tank</a> &gt; <a href="index.source.html" class="el_package">Tanks</a> &gt; <span class="el_source">Parachute.java</span></div><h1>Parachute.java</h1><pre class="source lang-java linenums">package Tanks;
+
+import processing.core.PApplet;
+
+/**
+ * The Parachute class represents a parachute object in the game.
+ * Parachutes are used to slow the descent of tanks falling from the sky.
+ */
+public class Parachute{
+    private int x;
+    private int y;
+
+    /**
+     * Constructs a new Parachute object at the specified coordinates.
+     *
+     * @param x    The initial X-coordinate of the parachute.
+     * @param y    The initial Y-coordinate of the parachute.
+     * @param app  The PApplet instance.
+     */
+<span class="fc" id="L20">    public Parachute(int x, int y, PApplet app){</span>
+<span class="fc" id="L21">        this.x = x;</span>
+<span class="fc" id="L22">        this.y = y;</span>
+<span class="fc" id="L23">    }</span>
+
+    /**
+     * Updates the position of the parachute for each game tick.
+     * Moves the parachute upwards to simulate descent slowing.
+     */
+
+    public void tick(){
+<span class="fc" id="L31">        this.y -= 2;</span>
+<span class="fc" id="L32">    }</span>
+
+    /**
+     * Draws the parachute on the screen.
+     *
+     * @param app The PApplet instance.
+     */
+
+    public void draw(PApplet app){
+<span class="fc" id="L41">        app.image( app.loadImage(&quot;src/main/resources/Tanks/parachute.png&quot;), this.x, this.y);</span>
+<span class="fc" id="L42">    }</span>
+
+    public int getX(){
+<span class="nc" id="L45">        return this.x;</span>
+    }
+
+    public int getY(){
+<span class="nc" id="L49">        return this.y;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -1,20 +1,29 @@
 package Tanks;
 
-import processing.core.PImage;
 import processing.core.PApplet;
 
+/**
+ * The Explosion class represents an explosion effect at a specific location in the game.
+ * It consists of expanding circles with different colors to simulate the explosion.
+ */
 public class Explosion {
     private int x;
     private int y;
     private int explosionRadius = 30;
     private float elapsedTime;
-    private float animationDuration = 0.6f; // Animation duration in seconds
+    private float animationDuration = 0.6f; // Animation duration
 
     // Radius variables for each circle
     private float redRadius;
     private float orangeRadius;
     private float yellowRadius;
 
+    /**
+     * Constructs a new Explosion object at the specified coordinates.
+     *
+     * @param x The X-coordinate of the explosion.
+     * @param y The Y-coordinate of the explosion.
+     */
     public Explosion(int x, int y) {
         this.x = x;
         this.y = y;
@@ -24,7 +33,11 @@ public class Explosion {
         this.yellowRadius = 0; 
     }
 
-    public void update() {
+    /**
+     * Updates the state of the explosion.
+     * Calculates the current radius of each circle based on the elapsed time.
+     */
+    public void tick() {
         elapsedTime += 0.2;
 
         // Calculate the current radius of each circle based on the elapsed time
@@ -33,6 +46,11 @@ public class Explosion {
         yellowRadius = PApplet.map(elapsedTime, 0, animationDuration, 0, explosionRadius * 0.2f);
     }
 
+    /**
+     * Draws the explosion on the screen.
+     *
+     * @param app The PApplet instance.
+     */
     public void draw(PApplet app) {
 
         // Draw the red circle
@@ -54,5 +72,17 @@ public class Explosion {
 
     public boolean isFinished() {
         return elapsedTime >= animationDuration;
+    }
+
+    public float getRedRadius(){
+        return this.redRadius;
+    }
+
+    public float getOrangeRadius(){
+        return this.orangeRadius;
+    }
+
+    public float getYellowRadius(){
+        return this.yellowRadius;
     }
 }

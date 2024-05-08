@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Tree.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">tank</a> &gt; <a href="index.source.html" class="el_package">Tanks</a> &gt; <span class="el_source">Tree.java</span></div><h1>Tree.java</h1><pre class="source lang-java linenums">package Tanks;
+
+import processing.core.PApplet;
+import processing.core.PImage;
+
+/**
+ * The Tree class represents a tree object in the game.
+ * Trees are static elements that are placed on the terrain.
+ */
+public class Tree{
+
+    public int x;
+    public int y;
+    public PImage sprite;
+    private int[] terrain;
+<span class="fc" id="L16">    private int CELLHEIGHT = 32;</span>
+
+    /**
+     * Constructs a new Tree object with the specified parameters.
+     *
+     * @param x      The X-coordinate of the tree.
+     * @param y      The Y-coordinate of the tree.
+     * @param sprite The sprite image of the tree.
+     * @param terrain The terrain height map.
+     */
+<span class="fc" id="L26">    public Tree(int x, int y, PImage sprite, int[] terrain){</span>
+<span class="fc" id="L27">        this.x = x;</span>
+<span class="fc" id="L28">        this.y = y;</span>
+<span class="fc" id="L29">        this.sprite = sprite;</span>
+<span class="fc" id="L30">        this.terrain = terrain;</span>
+<span class="fc" id="L31">    }</span>
+
+    /**
+     * Updates the position of the tree based on the current terrain height.
+     */
+    public void tick(){
+<span class="fc" id="L37">        this.y = terrain[this.x + CELLHEIGHT/2] - CELLHEIGHT;</span>
+<span class="fc" id="L38">    }</span>
+
+    /**
+     * Draws the tree on the screen.
+     *
+     * @param app The PApplet instance.
+     */
+    public void draw(PApplet app){
+<span class="pc bpc" id="L46" title="1 of 2 branches missed.">        if (this.sprite != null){</span>
+<span class="fc" id="L47">            app.image(this.sprite, this.x, this.y, 32, 32);</span>
+        }
+<span class="fc" id="L49">    }</span>
+
+    public void setTerrain(int[] terrain){
+<span class="fc" id="L52">        this.terrain = terrain;</span>
+<span class="fc" id="L53">    }</span>
+
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

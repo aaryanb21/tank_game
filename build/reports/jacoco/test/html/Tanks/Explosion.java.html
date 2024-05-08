@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Explosion.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">tank</a> &gt; <a href="index.source.html" class="el_package">Tanks</a> &gt; <span class="el_source">Explosion.java</span></div><h1>Explosion.java</h1><pre class="source lang-java linenums">package Tanks;
+
+import processing.core.PApplet;
+
+/**
+ * The Explosion class represents an explosion effect at a specific location in the game.
+ * It consists of expanding circles with different colors to simulate the explosion.
+ */
+public class Explosion {
+    private int x;
+    private int y;
+<span class="fc" id="L12">    private int explosionRadius = 30;</span>
+    private float elapsedTime;
+<span class="fc" id="L14">    private float animationDuration = 0.6f; // Animation duration</span>
+
+    // Radius variables for each circle
+    private float redRadius;
+    private float orangeRadius;
+    private float yellowRadius;
+
+    /**
+     * Constructs a new Explosion object at the specified coordinates.
+     *
+     * @param x The X-coordinate of the explosion.
+     * @param y The Y-coordinate of the explosion.
+     */
+<span class="fc" id="L27">    public Explosion(int x, int y) {</span>
+<span class="fc" id="L28">        this.x = x;</span>
+<span class="fc" id="L29">        this.y = y;</span>
+<span class="fc" id="L30">        this.elapsedTime = 0;</span>
+<span class="fc" id="L31">        this.redRadius = 0;</span>
+<span class="fc" id="L32">        this.orangeRadius = 0;</span>
+<span class="fc" id="L33">        this.yellowRadius = 0; </span>
+<span class="fc" id="L34">    }</span>
+
+    /**
+     * Updates the state of the explosion.
+     * Calculates the current radius of each circle based on the elapsed time.
+     */
+    public void tick() {
+<span class="fc" id="L41">        elapsedTime += 0.2;</span>
+
+        // Calculate the current radius of each circle based on the elapsed time
+<span class="fc" id="L44">        redRadius = PApplet.map(elapsedTime, 0, animationDuration, 0, explosionRadius);</span>
+<span class="fc" id="L45">        orangeRadius = PApplet.map(elapsedTime, 0, animationDuration, 0, explosionRadius * 0.5f);</span>
+<span class="fc" id="L46">        yellowRadius = PApplet.map(elapsedTime, 0, animationDuration, 0, explosionRadius * 0.2f);</span>
+<span class="fc" id="L47">    }</span>
+
+    /**
+     * Draws the explosion on the screen.
+     *
+     * @param app The PApplet instance.
+     */
+    public void draw(PApplet app) {
+
+        // Draw the red circle
+<span class="fc" id="L57">        app.stroke(255, 0, 0);</span>
+<span class="fc" id="L58">        app.fill(255,0,0);</span>
+<span class="fc" id="L59">        app.ellipse(this.x, this.y, redRadius * 2, redRadius * 2);</span>
+
+        // Draw the orange circle
+<span class="fc" id="L62">        app.stroke(255, 165, 0);</span>
+<span class="fc" id="L63">        app.fill(255, 165, 0);</span>
+<span class="fc" id="L64">        app.ellipse(this.x, this.y, orangeRadius * 2, orangeRadius * 2);</span>
+
+        // Draw the yellow circle
+<span class="fc" id="L67">        app.stroke(255, 255, 255);</span>
+<span class="fc" id="L68">        app.fill(255, 255, 0);</span>
+<span class="fc" id="L69">        app.ellipse(this.x, this.y, yellowRadius * 2, yellowRadius * 2);</span>
+<span class="fc" id="L70">        app.noStroke();</span>
+<span class="fc" id="L71">    }</span>
+
+    public boolean isFinished() {
+<span class="fc bfc" id="L74" title="All 2 branches covered.">        return elapsedTime &gt;= animationDuration;</span>
+    }
+
+    public float getRedRadius(){
+<span class="fc" id="L78">        return this.redRadius;</span>
+    }
+
+    public float getOrangeRadius(){
+<span class="fc" id="L82">        return this.orangeRadius;</span>
+    }
+
+    public float getYellowRadius(){
+<span class="fc" id="L86">        return this.yellowRadius;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

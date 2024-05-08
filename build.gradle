@@ -32,6 +32,11 @@ dependencies {
 
     // Use JUnit Jupiter Engine for testing.
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.6.2'
+
+    // For Mockito core functionality
+    testImplementation 'org.mockito:mockito-core:3.+'  
+    // For integration wit
+    testImplementation 'org.mockito:mockito-junit-jupiter:3.+'  
 }
 
 application {
@@ -41,6 +46,25 @@ application {
 
 test {
     // Use junit platform for unit tests
+
+    testLogging {
+
+        events "passed", "skipped", "failed"
+
+        showStandardStreams = true
+        
+        onOutput { descriptor, event ->
+            if (event.destination == TestOutputEvent.Destination.StdOut) {
+                logger.lifecycle("Test: ${descriptor.name} - ${event.message}")
+            }
+            if (event.destination == TestOutputEvent.Destination.StdErr) {
+                logger.lifecycle("Test: ${descriptor.name} - ERROR: ${event.message}")
+            }
+        }
+
+        exceptionFormat = 'full'
+    }
+
     useJUnitPlatform()
     ignoreFailures = true
 }

@@ -1,0 +1,434 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Tank.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">tank</a> &gt; <a href="index.source.html" class="el_package">Tanks</a> &gt; <span class="el_source">Tank.java</span></div><h1>Tank.java</h1><pre class="source lang-java linenums">package Tanks;
+
+import java.util.ArrayList;
+import processing.core.PApplet;
+
+/**
+ * The Tank class represents a tank object in a game environment.
+ * Tanks have attributes such as position, velocity, health, fuel, power, and score,
+ * and can perform actions like movement, shooting, and airstrikes.
+ */
+public class Tank implements Comparable&lt;Tank&gt;{
+    public int x;
+    public int y;
+    private int xVel;
+    private int fuel;
+    private float power;
+    private int health;
+    public float rotateAngle;
+    private int rotateAngleVel;
+    public ArrayList&lt;Bullet&gt; bullets;
+    private int[] terrain_new;
+    private String color;
+    private ArrayList&lt;Tank&gt; tanks;
+    private int score;
+    private int tankID;
+    private Explosion e;
+    private int wind;
+    private int parachutes;
+    private boolean parachuteDeployed;
+    private int fallDamage;
+    private int scoreToBeUpdated;
+    private char name;
+    private Tank fellBy;
+
+    /**
+     * Constructs a new Tank object with the specified parameters.
+     *
+     * @param x          The initial X-coordinate of the tank.
+     * @param y          The initial Y-coordinate of the tank.
+     * @param terrain_new The terrain information.
+     * @param color      The color of the tank.
+     * @param tanks      The list of all tanks in the game.
+     * @param tankID     The unique ID of the tank.
+     * @param wind       The wind speed.
+     * @param name       The name of the tank.
+     */
+<span class="fc" id="L47">    public Tank(int x, int y, int[] terrain_new, String color, ArrayList&lt;Tank&gt; tanks, int tankID, int wind, char name){</span>
+<span class="fc" id="L48">        this.x = x;</span>
+<span class="fc" id="L49">        this.y = y;</span>
+<span class="fc" id="L50">        this.xVel = 0;</span>
+<span class="fc" id="L51">        this.fuel = 250;</span>
+<span class="fc" id="L52">        this.power = 50;</span>
+<span class="fc" id="L53">        this.health = 100;</span>
+<span class="fc" id="L54">        this.rotateAngle = 0;</span>
+<span class="fc" id="L55">        this.rotateAngleVel = 0;</span>
+<span class="fc" id="L56">        this.bullets = new ArrayList&lt;Bullet&gt;();</span>
+<span class="fc" id="L57">        this.terrain_new = terrain_new;</span>
+<span class="fc" id="L58">        this.color = color;</span>
+<span class="fc" id="L59">        this.tanks = tanks;</span>
+<span class="fc" id="L60">        this.score = 0;</span>
+<span class="fc" id="L61">        this.tankID = tankID;</span>
+<span class="fc" id="L62">        this.wind = wind; </span>
+<span class="fc" id="L63">        this.parachutes = 3;</span>
+<span class="fc" id="L64">        this.parachuteDeployed = false;</span>
+<span class="fc" id="L65">        this.fallDamage = 0;</span>
+<span class="fc" id="L66">        this.name = name;</span>
+<span class="fc" id="L67">    }</span>
+
+    public int compareTo(Tank t){
+<span class="fc" id="L70">        return Integer.compare(this.score, t.getScore());</span>
+    }
+
+    /**
+     * Updates the state of the tank for each game tick.
+     *
+     * @param app The PApplet instance.
+     */
+    public void tick(PApplet app){
+<span class="pc bpc" id="L79" title="1 of 2 branches missed.">        if(this.y &gt;= 640){</span>
+<span class="nc" id="L80">            this.explode();</span>
+        }
+
+<span class="fc bfc" id="L83" title="All 2 branches covered.">        if (this.power &gt; this.health){</span>
+<span class="fc" id="L84">            this.power = this.health;</span>
+        }
+        
+<span class="fc bfc" id="L87" title="All 4 branches covered.">        if (this.x &gt;= 2 &amp;&amp; this.x &lt;= 864){</span>
+<span class="pc bpc" id="L88" title="1 of 2 branches missed.">            if (this.fuel &gt;= 1){</span>
+<span class="fc" id="L89">                this.x += this.xVel;</span>
+            }
+            else {
+<span class="nc" id="L92">                this.stop();</span>
+            }
+<span class="fc bfc" id="L94" title="All 2 branches covered.">            if (this.xVel != 0){</span>
+<span class="fc" id="L95">                this.fuel -= 1;</span>
+            }
+        }
+<span class="fc bfc" id="L98" title="All 2 branches covered.">        else if (this.x &lt; 2){</span>
+<span class="fc" id="L99">            this.x = 2;</span>
+        }
+<span class="pc bpc" id="L101" title="1 of 2 branches missed.">        else if (this.x &gt; 864){</span>
+<span class="fc" id="L102">            this.x = 864;</span>
+        }
+
+<span class="fc bfc" id="L105" title="All 4 branches covered.">        if (this.rotateAngle &gt;= -90 &amp;&amp; this.rotateAngle &lt;= 90){</span>
+<span class="fc" id="L106">            this.rotateAngle += this.rotateAngleVel;</span>
+        }
+
+<span class="fc bfc" id="L109" title="All 2 branches covered.">        if (this.rotateAngle &gt; 90){</span>
+<span class="fc" id="L110">            this.rotateAngle = 90;</span>
+        }
+<span class="fc bfc" id="L112" title="All 2 branches covered.">        if (this.rotateAngle &lt; -90){</span>
+<span class="fc" id="L113">            this.rotateAngle = -90;</span>
+            }
+<span class="fc bfc" id="L115" title="All 4 branches covered.">        if (this.y &lt; terrain_new[this.x] &amp;&amp; this.xVel == 0){</span>
+<span class="pc bpc" id="L116" title="5 of 6 branches missed.">            if (this.parachutes &gt;= 1 || this.parachutes == 0 &amp;&amp; this.parachuteDeployed == true){</span>
+<span class="fc" id="L117">                this.y += 2;</span>
+<span class="fc bfc" id="L118" title="All 2 branches covered.">                if (this.parachuteDeployed == false){</span>
+<span class="fc" id="L119">                    this.parachutes--;</span>
+                }
+<span class="fc" id="L121">                this.parachuteDeployed = true;</span>
+<span class="fc" id="L122">                Parachute p = new Parachute(this.x - 30, this.y - 70, app);</span>
+<span class="fc" id="L123">                p.tick();</span>
+<span class="fc" id="L124">                p.draw(app);</span>
+<span class="fc" id="L125">            }</span>
+            else{ 
+<span class="nc" id="L127">                this.parachuteDeployed = false;</span>
+<span class="nc" id="L128">                this.y += 4;</span>
+<span class="nc" id="L129">                this.fallDamage += 4;</span>
+            }
+        }
+        else{
+<span class="fc" id="L133">            this.parachuteDeployed = false;</span>
+<span class="fc" id="L134">            this.y = this.terrain_new[this.x];</span>
+<span class="pc bpc" id="L135" title="1 of 2 branches missed.">            if (this.fallDamage &gt; this.health){</span>
+<span class="nc" id="L136">                this.fallDamage = this.health;</span>
+            }
+<span class="fc" id="L138">            this.health -= this.fallDamage;</span>
+<span class="pc bpc" id="L139" title="1 of 4 branches missed.">            if (this.fellBy != null &amp;&amp; this.fellBy.getID() != this.tankID){</span>
+<span class="nc" id="L140">                this.fellBy.setScore(this.fellBy.getScore() + fallDamage);</span>
+            }
+<span class="fc" id="L142">            this.fallDamage = 0;</span>
+        }       
+<span class="fc" id="L144">    }</span>
+
+    /**
+     * Initiates an explosion by creating a bullet at the tank's position.
+     * The explosion occurs when the tank's y-coordinate exceeds a certain threshold,
+     * typically indicating that the tank has fallen off the terrain.
+     * The bullet created represents the explosion effect.
+     */
+    public void explode(){
+<span class="fc" id="L153">        bullets.add(new Bullet(this.x + 9 - 5, this.y - 5, this.power, Math.abs(this.rotateAngle - 90 + 3), this.terrain_new, this.color, this.tanks, this.tankID, this.wind));</span>
+<span class="fc" id="L154">        bullets.get(bullets.size() - 1).explode(this.x, this.y);</span>
+<span class="fc" id="L155">    }</span>
+
+    /**
+     * Draws the tank on the screen.
+     *
+     * @param app The PApplet instance.
+     */
+    public void draw(PApplet app){
+
+        //Tank
+<span class="fc" id="L165">        String[] arr = this.color.split(&quot;,&quot;);</span>
+        
+<span class="fc" id="L167">        int a = Integer.parseInt(arr[0]);</span>
+<span class="fc" id="L168">        int b = Integer.parseInt(arr[1]);</span>
+<span class="fc" id="L169">        int c = Integer.parseInt(arr[2]);</span>
+
+<span class="fc" id="L171">        app.fill(a, b, c);</span>
+<span class="fc" id="L172">        app.rect(this.x - 7, this.y - 1, 18, 6);</span>
+<span class="fc" id="L173">        app.rect(this.x+4 - 7,this.y-6 - 1, 9, 6);</span>
+        
+        //Turret
+<span class="fc" id="L176">        app.translate(this.x+9 - 7, this.y-3 - 1);</span>
+<span class="fc" id="L177">        app.rotate(PApplet.radians(this.rotateAngle));</span>
+<span class="fc" id="L178">        app.fill(0,0,0);</span>
+<span class="fc" id="L179">        app.rect(-2,-15,4,15);</span>
+<span class="fc" id="L180">        app.resetMatrix();</span>
+        
+        //Bullet
+<span class="fc" id="L183">        updateBullets(app);</span>
+<span class="fc" id="L184">        displayBullets(app);</span>
+        
+        //Explosion
+<span class="fc bfc" id="L187" title="All 4 branches covered.">        if (e != null &amp;&amp; e.isFinished() == false){</span>
+<span class="fc" id="L188">            e.tick();</span>
+<span class="fc" id="L189">            e.draw(app);</span>
+        }
+<span class="fc" id="L191">    }</span>
+
+    /**
+     * Moves the tank to the right if fuel is available.
+     * If fuel is depleted, the tank stops moving.
+     */
+    public void moveRight(){
+<span class="pc bpc" id="L198" title="1 of 2 branches missed.">        if (this.fuel &gt; 0){</span>
+<span class="fc" id="L199">            this.xVel = 2;</span>
+        }
+        else{
+<span class="nc" id="L202">            this.stop();</span>
+        }
+<span class="fc" id="L204">    }</span>
+
+    /**
+     * Moves the tank to the left if fuel is available.
+     * If fuel is depleted, the tank stops moving.
+     */
+    public void moveLeft(){
+<span class="pc bpc" id="L211" title="1 of 2 branches missed.">        if (this.fuel &gt; 0){</span>
+<span class="fc" id="L212">            this.xVel = -2;</span>
+        }
+        else{
+<span class="nc" id="L215">            this.stop();</span>
+        }
+<span class="fc" id="L217">    }</span>
+
+    /**
+     * Rotates the turret of the tank either left or right.
+     *
+     * @param direction The direction to rotate the turret (&quot;right&quot; or &quot;left&quot;).
+     */
+    public void moveTurret(String direction){
+<span class="fc bfc" id="L225" title="All 2 branches covered.">        if (direction.equals(&quot;right&quot;)){</span>
+<span class="fc" id="L226">            this.rotateAngleVel = 3;</span>
+        }
+        else{
+<span class="fc" id="L229">            this.rotateAngleVel = -3;</span>
+        }    
+<span class="fc" id="L231">    }</span>
+   
+    /**
+     * Stops the horizontal movement of the tank.
+     * The tank remains stationary until further movement commands are issued.
+     */
+    public void stop(){
+<span class="fc" id="L238">        this.xVel = 0;</span>
+<span class="fc" id="L239">    }</span>
+
+    /**
+     * Stops the rotation of the turret.
+     * The turret remains in its current position until further rotation commands are issued.
+     */
+    public void stopTurret(){
+<span class="fc" id="L246">        this.rotateAngleVel = 0;</span>
+<span class="fc" id="L247">    }</span>
+
+    /**
+     * Initiates a shooting action by creating a new bullet at the tank's turret position.
+     * The bullet inherits the tank's position, angle, and other properties.
+     */
+    public void shoot(){
+<span class="fc" id="L254">        bullets.add(new Bullet(this.x + 9 - 7, this.y - 5, this.power, Math.abs(this.rotateAngle - 90 + 3), this.terrain_new, this.color, this.tanks, this.tankID, this.wind));</span>
+<span class="fc" id="L255">    }</span>
+
+    /**
+     * Initiates an airstrike power-up by creating a bullet at the specified x-coordinate.
+     * The airstrike bullet travels vertically downwards, causing damage upon impact.
+     *
+     * @param x The x-coordinate at which to initiate the airstrike.
+     */
+    public void airStrikePowerUp(int x){
+<span class="fc" id="L264">        bullets.add(new Bullet(x, 5, 50, 270, this.terrain_new, this.color, this.tanks, this.tankID, this.wind));</span>
+<span class="fc" id="L265">    }</span>
+
+    /**
+     * Updates the positions and states of bullets fired by the tank.
+     * Removes bullets that have gone off-screen.
+     *
+     * @param app The PApplet instance.
+     */
+    public void updateBullets(PApplet app) {
+<span class="fc bfc" id="L274" title="All 2 branches covered.">        for (int i = 0; i &lt; bullets.size(); i++) {</span>
+<span class="fc" id="L275">            Bullet bullet = bullets.get(i);</span>
+<span class="fc" id="L276">            bullet.tick(app);</span>
+<span class="fc bfc" id="L277" title="All 2 branches covered.">            if (bullet.isOffScreen()) {</span>
+<span class="fc" id="L278">                this.score += bullets.get(i).getScore();</span>
+<span class="fc" id="L279">                e = new Explosion((int)bullet.x, (int)bullet.y);</span>
+<span class="fc" id="L280">                bullets.remove(i);</span>
+            }
+        }
+<span class="fc" id="L283">    }</span>
+
+    /**
+     * Renders all bullets fired by the tank on the screen.
+     *
+     * @param app The PApplet instance.
+     */
+    public void displayBullets(PApplet app) {
+<span class="fc bfc" id="L291" title="All 2 branches covered.">        for (Bullet bullet : bullets) {</span>
+<span class="fc" id="L292">            bullet.draw(app);</span>
+<span class="fc" id="L293">        }</span>
+<span class="fc" id="L294">    }</span>
+
+    public void setTerrain(int[] terrain){
+<span class="fc" id="L297">        this.terrain_new = terrain;</span>
+<span class="fc" id="L298">    }</span>
+
+    /**
+     * Increases the power of the tank's shots.
+     * Power is capped at the tank's health level.
+     */
+    public void increasePower(){
+<span class="nc" id="L305">        this.power += 1.2;</span>
+<span class="nc bnc" id="L306" title="All 2 branches missed.">        if (this.power &gt; this.health){</span>
+<span class="nc" id="L307">            this.power = this.health;</span>
+        }
+<span class="nc" id="L309">    }</span>
+
+    /**
+     * Decreases the power of the tank's shots.
+     * Power cannot go below zero.
+     */
+    public void decreasePower(){
+<span class="nc" id="L316">        this.power -= 1.2;</span>
+<span class="nc bnc" id="L317" title="All 2 branches missed.">        if (this.power &lt; 0){</span>
+<span class="nc" id="L318">            this.power = 0;</span>
+        }
+<span class="nc" id="L320">    }</span>
+
+    /**
+     * Resets the tank's attributes to their default values.
+     * Used when respawning the tank or starting a new game.
+     */
+    public void resetValues(){  
+<span class="fc" id="L327">        this.health = 100;</span>
+<span class="fc" id="L328">        this.power = 50;</span>
+<span class="fc" id="L329">        this.rotateAngle = 0;</span>
+<span class="fc" id="L330">        this.rotateAngleVel = 0;</span>
+<span class="fc" id="L331">        this.fuel = 250;</span>
+<span class="fc" id="L332">        this.bullets.clear();</span>
+<span class="fc" id="L333">        this.e = null;</span>
+<span class="fc" id="L334">    }</span>
+
+    public void incrementParachute(){
+<span class="fc" id="L337">        this.parachutes++;</span>
+<span class="fc" id="L338">    }</span>
+
+    public char getName(){
+<span class="fc" id="L341">        return this.name;</span>
+    }
+
+    public void setFellBy(Tank t){
+<span class="fc" id="L345">        this.fellBy = t;</span>
+<span class="fc" id="L346">    }</span>
+
+    public void setWind(int w){
+<span class="fc" id="L349">        this.wind = w;</span>
+<span class="fc" id="L350">    }</span>
+
+    public void setxVel (int xVel){
+<span class="nc" id="L353">        this.xVel = xVel;</span>
+<span class="nc" id="L354">    }</span>
+
+    public boolean isParachuteDeployed(){
+<span class="nc" id="L357">        return this.parachuteDeployed;</span>
+    }
+
+    public int getxVel (){
+<span class="fc" id="L361">        return this.xVel;</span>
+    }
+
+    public int getRotateAngleVel(){
+<span class="fc" id="L365">        return this.rotateAngleVel;</span>
+    }
+
+    public void setParachutes(int p){
+<span class="nc" id="L369">        this.parachutes = p;</span>
+<span class="nc" id="L370">    }</span>
+
+    public int getFuel(){
+<span class="fc" id="L373">        return this.fuel;</span>
+    }
+
+    public int getHealth(){
+<span class="fc" id="L377">        return this.health;</span>
+    }
+
+    public void setFuel(int fuel){
+<span class="fc" id="L381">        this.fuel = fuel;</span>
+<span class="fc" id="L382">    }</span>
+
+    public String getColor(){
+<span class="fc" id="L385">        return this.color;</span>
+    }
+
+    public int getParachutes(){
+<span class="fc" id="L389">        return this.parachutes;</span>
+    }
+
+    public int getScoreToBeUpdated(){
+<span class="nc" id="L393">        return this.scoreToBeUpdated;</span>
+    }
+
+    public void setScoreToBeUpdated(int x){
+<span class="nc" id="L397">        this.scoreToBeUpdated = x;</span>
+<span class="nc" id="L398">    }</span>
+
+    public float getPower(){
+<span class="fc" id="L401">        return this.power;</span>
+    }
+
+    public void setHealth(int health){
+
+<span class="fc bfc" id="L406" title="All 2 branches covered.">        if (health &lt;= 0){</span>
+<span class="fc" id="L407">            this.health = 0;</span>
+        }
+<span class="pc bpc" id="L409" title="1 of 2 branches missed.">        if (health &gt;= 100){</span>
+<span class="nc" id="L410">            this.health = 100;</span>
+        }
+        else {
+<span class="fc" id="L413">            this.health = health;</span>
+        }
+<span class="fc" id="L415">    }</span>
+
+    public int getScore(){
+<span class="fc" id="L418">        return this.score;</span>
+    }
+
+    public void setScore(int score){
+<span class="fc" id="L422">        this.score = score;</span>
+<span class="fc" id="L423">    }</span>
+
+    public int getID(){
+<span class="fc" id="L426">        return this.tankID;</span>
+    }
+
+    public void setID(int id){
+<span class="fc" id="L430">        this.tankID = id;</span>
+<span class="fc" id="L431">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

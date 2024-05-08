@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Bullet.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">tank</a> &gt; <a href="index.source.html" class="el_package">Tanks</a> &gt; <span class="el_source">Bullet.java</span></div><h1>Bullet.java</h1><pre class="source lang-java linenums">package Tanks;
+
+import processing.core.PApplet;
+import static java.lang.Math.*;
+import java.util.ArrayList;
+
+/**
+ * The Bullet class represents a projectile fired by tanks in the game.
+ * Bullets travel with a certain velocity and angle, causing damage upon impact with terrain or tanks.
+ */
+public class Bullet{
+
+    public float x;
+    public float y;
+    private double xVel;
+    private double yVel;
+    private float angle;
+    private int[] terrain;
+    private float power;
+    private String color;
+    private ArrayList&lt;Tank&gt; tanks;
+    private int bulletID;
+    private int vel;
+    private boolean offScreen;
+<span class="fc" id="L25">    private int BLAST_RADIUS = 30;</span>
+<span class="fc" id="L26">    private int score = 0;</span>
+    private int wind;
+
+
+        /**
+         * Constructs a new Bullet object with the specified parameters.
+         *
+         * @param x       The initial X-coordinate of the bullet.
+         * @param y       The initial Y-coordinate of the bullet.
+         * @param power   The power of the bullet, influencing its velocity.
+         * @param angle   The angle at which the bullet is fired.
+         * @param terrain The terrain information.
+         * @param color   The color of the bullet.
+         * @param tanks   The list of all tanks in the game.
+         * @param bulletID The unique ID of the bullet.
+         * @param wind    The wind speed affecting the bullet's trajectory.
+         */
+<span class="fc" id="L43">    public Bullet (float x, float y, float power, float angle, int[] terrain, String color, ArrayList&lt;Tank&gt; tanks, int bulletID, int wind){</span>
+<span class="fc" id="L44">        this.x = x;</span>
+<span class="fc" id="L45">        this.y = y;</span>
+<span class="fc" id="L46">        this.power = power;</span>
+<span class="fc" id="L47">        this.vel = (int) round(2 + 0.16 * this.power);</span>
+<span class="fc" id="L48">        this.angle = angle;</span>
+<span class="fc" id="L49">        this.yVel = this.vel * sin(PApplet.radians(this.angle));</span>
+<span class="fc" id="L50">        this.xVel = this.vel * cos(PApplet.radians(this.angle)) - 0.261680;</span>
+<span class="fc" id="L51">        this.terrain = terrain;</span>
+<span class="fc" id="L52">        this.color = color;</span>
+<span class="fc" id="L53">        this.tanks = tanks;</span>
+<span class="fc" id="L54">        this.bulletID = bulletID;</span>
+<span class="fc" id="L55">        this.wind = wind;</span>
+<span class="fc" id="L56">    }</span>
+
+    /**
+     * Updates the state of the bullet for each game tick.
+     *
+     * @param app The PApplet instance.
+     */
+    public void tick(PApplet app) {
+
+<span class="fc" id="L65">        this.x += this.xVel;</span>
+<span class="fc" id="L66">        this.y -= this.yVel;</span>
+
+<span class="fc" id="L68">        this.xVel += + ((this.wind * 0.03)/30);</span>
+<span class="fc" id="L69">        this.yVel -= 0.4;</span>
+
+<span class="fc bfc" id="L71" title="All 2 branches covered.">        if (this.hasHitGround()){</span>
+<span class="fc" id="L72">            this.explode((int)this.x, (int)this.y);</span>
+        }    
+<span class="fc" id="L74">    }</span>
+
+    /**
+     * Draws the bullet on the screen.
+     *
+     * @param app The PApplet instance.
+     */
+    public void draw (PApplet app){
+
+<span class="fc" id="L83">        String[] arr = this.color.split(&quot;,&quot;);</span>
+        
+<span class="fc" id="L85">        int a = Integer.parseInt(arr[0]);</span>
+<span class="fc" id="L86">        int b = Integer.parseInt(arr[1]);</span>
+<span class="fc" id="L87">        int c = Integer.parseInt(arr[2]);</span>
+
+<span class="fc" id="L89">        app.fill(a, b, c);</span>
+<span class="fc" id="L90">        app.ellipse(this.x, this.y, 7, 7);  </span>
+<span class="fc" id="L91">    }</span>
+
+    /**
+     * Checks if the bullet has gone off-screen.
+     *
+     * @return True if the bullet is off-screen, otherwise false.
+     */
+    public boolean isOffScreen(){
+<span class="fc bfc" id="L99" title="All 2 branches covered.">        if (this.offScreen){</span>
+<span class="fc" id="L100">            return true;</span>
+        }
+<span class="pc bpc" id="L102" title="3 of 8 branches missed.">        return (x &lt; 0 || x &gt; App.WIDTH || y &lt; 0 || y &gt; App.HEIGHT);</span>
+    }
+
+    /**
+     * Checks if the bullet has hit the ground.
+     *
+     * @return True if the bullet has hit the ground, otherwise false.
+     */
+    public boolean hasHitGround(){
+<span class="fc bfc" id="L111" title="All 4 branches covered.">        if (isOffScreen() == false &amp;&amp; this.y &gt;= this.terrain[(int)this.x]){</span>
+<span class="fc" id="L112">            return true;</span>
+        }
+        else {
+<span class="fc" id="L115">            return false;</span>
+        }
+    }
+
+    /**
+     * Initiates an explosion at the bullet's position upon impact.
+     * The explosion affects nearby terrain and tanks.
+     *
+     * @param x The X-coordinate of the explosion point.
+     * @param y The Y-coordinate of the explosion point.
+     */
+    public void explode(int x, int y){    
+<span class="fc bfc" id="L127" title="All 2 branches covered.">        for (int i = (int)this.x - BLAST_RADIUS; i &lt; this.x + BLAST_RADIUS; i++) {</span>
+<span class="fc bfc" id="L128" title="All 2 branches covered.">            for (int j = (int)this.y - BLAST_RADIUS; j &lt; this.y + BLAST_RADIUS; j++) {</span>
+                // Ensure the indices are within the bounds of the terrain array
+<span class="pc bpc" id="L130" title="2 of 8 branches missed.">                if (i &gt;= 0 &amp;&amp; i &lt; this.terrain.length &amp;&amp; j &gt;= 0 &amp;&amp; j &gt; this.terrain[i]) {</span>
+                    // Calculate distance from the explosion point
+<span class="fc" id="L132">                    float distance = dist(x, y, i, j);</span>
+                    // If within blast radius, update terrain
+<span class="fc bfc" id="L134" title="All 2 branches covered.">                    if (distance &lt;= BLAST_RADIUS) {</span>
+                        // Update the terrain height at position i
+<span class="fc" id="L136">                        terrain[i] += BLAST_RADIUS - distance;</span>
+                    }
+                }
+            }
+        }
+
+<span class="fc" id="L142">        updateTankHealth((int)this.x, (int)this.y);</span>
+
+        //Makes isOffScreen true so bullet disappears
+<span class="fc" id="L145">        this.offScreen = true;</span>
+<span class="fc" id="L146">    }</span>
+
+    /**
+     * Updates the health of tanks affected by the explosion.
+     *
+     * @param x The X-coordinate of the explosion point.
+     * @param y The Y-coordinate of the explosion point.
+     */
+    public void updateTankHealth(int x, int y){
+<span class="fc bfc" id="L155" title="All 2 branches covered.">        for (Tank tanks : this.tanks){</span>
+<span class="fc bfc" id="L156" title="All 2 branches covered.">            if (dist((int)this.x, (int)this.y, tanks.x, tanks.y) &lt;= 30){</span>
+<span class="fc" id="L157">                int damage = 60 - (2 * (int)dist((int)this.x, (int)this.y, tanks.x + 4 , tanks.y));</span>
+<span class="fc" id="L158">                int newHealth = tanks.getHealth() - damage;</span>
+<span class="fc" id="L159">                tanks.setHealth(newHealth);</span>
+<span class="pc bpc" id="L160" title="1 of 2 branches missed.">                if (tanks.getID() != this.bulletID){</span>
+<span class="nc" id="L161">                    this.score += damage;</span>
+                }
+            }
+<span class="fc bfc" id="L164" title="All 2 branches covered.">            if (Math.abs(this.x - tanks.x) &lt;= 30){</span>
+<span class="fc" id="L165">                Tank t = null;</span>
+<span class="fc bfc" id="L166" title="All 2 branches covered.">                for (int i = 0; i &lt; this.tanks.size(); i++){</span>
+<span class="fc bfc" id="L167" title="All 2 branches covered.">                    if (this.bulletID == this.tanks.get(i).getID()){</span>
+<span class="fc" id="L168">                        t = this.tanks.get(i);</span>
+                    }
+                }
+<span class="fc" id="L171">                tanks.setFellBy(t);</span>
+            }
+<span class="fc" id="L173">         }</span>
+<span class="fc" id="L174">    }</span>
+
+
+    /**
+     * Calculates the distance between two points.
+     *
+     * @param x1 The X-coordinate of the first point.
+     * @param y1 The Y-coordinate of the first point.
+     * @param x2 The X-coordinate of the second point.
+     * @param y2 The Y-coordinate of the second point.
+     * @return The distance between the points.
+     */
+    public float dist(int x1, int y1, int x2, int y2) {
+        // Calculate the horizontal and vertical differences between the points
+<span class="fc" id="L188">        float dx = x2 - x1;</span>
+<span class="fc" id="L189">        float dy = y2 - y1;</span>
+        
+        // Use the Pythagorean theorem to find the distance
+<span class="fc" id="L192">        float distance = (float) sqrt(dx * dx + dy * dy);</span>
+        
+<span class="fc" id="L194">        return distance;</span>
+    }
+
+    public int getScore(){
+<span class="fc" id="L198">        return this.score;</span>
+    }
+    
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
