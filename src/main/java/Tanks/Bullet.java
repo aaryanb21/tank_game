@@ -126,13 +126,9 @@ public class Bullet{
     public void explode(int x, int y){    
         for (int i = (int)this.x - BLAST_RADIUS; i < this.x + BLAST_RADIUS; i++) {
             for (int j = (int)this.y - BLAST_RADIUS; j < this.y + BLAST_RADIUS; j++) {
-                // Ensure the indices are within the bounds of the terrain array
                 if (i >= 0 && i < this.terrain.length && j >= 0 && j > this.terrain[i]) {
-                    // Calculate distance from the explosion point
                     float distance = dist(x, y, i, j);
-                    // If within blast radius, update terrain
                     if (distance <= BLAST_RADIUS) {
-                        // Update the terrain height at position i
                         terrain[i] += BLAST_RADIUS - distance;
                     }
                 }
@@ -154,7 +150,7 @@ public class Bullet{
     public void updateTankHealth(int x, int y){
         for (Tank tanks : this.tanks){
             if (dist((int)this.x, (int)this.y, tanks.x, tanks.y) <= 30){
-                int damage = 60 - (2 * (int)dist((int)this.x, (int)this.y, tanks.x + 4 , tanks.y));
+                int damage = 60 - (2 * (int)dist((int)this.x, (int)this.y, tanks.x + 4 , tanks.y-2));
                 int newHealth = tanks.getHealth() - damage;
                 tanks.setHealth(newHealth);
                 if (tanks.getID() != this.bulletID){

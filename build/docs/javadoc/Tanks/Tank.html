@@ -114,7 +114,7 @@ var activeTableTab = "activeTableTab";
 extends java.lang.Object
 implements java.lang.Comparable&lt;<a href="../Tanks/Tank.html" title="class in Tanks">Tank</a>&gt;</pre>
 <div class="block">The Tank class represents a tank object in a game environment.
- Tanks have attributes such as position, velocity, health, fuel, power, and score,
+ Tanks have attributes such as position, bullet velocity, health, fuel, power, and score,
  and can perform actions like movement, shooting, and airstrikes.</div>
 </li>
 </ul>
@@ -167,7 +167,7 @@ implements java.lang.Comparable&lt;<a href="../Tanks/Tank.html" title="class in 
 <tr class="altColor">
 <td class="colOne"><code><span class="memberNameLink"><a href="../Tanks/Tank.html#Tank-int-int-int:A-java.lang.String-java.util.ArrayList-int-int-char-">Tank</a></span>(int&nbsp;x,
     int&nbsp;y,
-    int[]&nbsp;terrain_new,
+    int[]&nbsp;terrainNew,
     java.lang.String&nbsp;color,
     java.util.ArrayList&lt;<a href="../Tanks/Tank.html" title="class in Tanks">Tank</a>&gt;&nbsp;tanks,
     int&nbsp;tankID,
@@ -451,7 +451,7 @@ implements java.lang.Comparable&lt;<a href="../Tanks/Tank.html" title="class in 
 <h4>Tank</h4>
 <pre>public&nbsp;Tank(int&nbsp;x,
             int&nbsp;y,
-            int[]&nbsp;terrain_new,
+            int[]&nbsp;terrainNew,
             java.lang.String&nbsp;color,
             java.util.ArrayList&lt;<a href="../Tanks/Tank.html" title="class in Tanks">Tank</a>&gt;&nbsp;tanks,
             int&nbsp;tankID,
@@ -462,7 +462,7 @@ implements java.lang.Comparable&lt;<a href="../Tanks/Tank.html" title="class in 
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>x</code> - The initial X-coordinate of the tank.</dd>
 <dd><code>y</code> - The initial Y-coordinate of the tank.</dd>
-<dd><code>terrain_new</code> - The terrain information.</dd>
+<dd><code>terrainNew</code> - The terrain information.</dd>
 <dd><code>color</code> - The color of the tank.</dd>
 <dd><code>tanks</code> - The list of all tanks in the game.</dd>
 <dd><code>tankID</code> - The unique ID of the tank.</dd>
@@ -514,9 +514,7 @@ implements java.lang.Comparable&lt;<a href="../Tanks/Tank.html" title="class in 
 <h4>explode</h4>
 <pre>public&nbsp;void&nbsp;explode()</pre>
 <div class="block">Initiates an explosion by creating a bullet at the tank's position.
- The explosion occurs when the tank's y-coordinate exceeds a certain threshold,
- typically indicating that the tank has fallen off the terrain.
- The bullet created represents the explosion effect.</div>
+ The explosion occurs when the tank's y-coordinate exceeds a certain threshold or hits something.</div>
 </li>
 </ul>
 <a name="draw-processing.core.PApplet-">
@@ -646,15 +644,6 @@ implements java.lang.Comparable&lt;<a href="../Tanks/Tank.html" title="class in 
 </dl>
 </li>
 </ul>
-<a name="setTerrain-int:A-">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>setTerrain</h4>
-<pre>public&nbsp;void&nbsp;setTerrain(int[]&nbsp;terrain)</pre>
-</li>
-</ul>
 <a name="increasePower--">
 <!--   -->
 </a>
@@ -685,7 +674,16 @@ implements java.lang.Comparable&lt;<a href="../Tanks/Tank.html" title="class in 
 <h4>resetValues</h4>
 <pre>public&nbsp;void&nbsp;resetValues()</pre>
 <div class="block">Resets the tank's attributes to their default values.
- Used when respawning the tank or starting a new game.</div>
+ Used when respawning the tank or starting a new level.</div>
+</li>
+</ul>
+<a name="setTerrain-int:A-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>setTerrain</h4>
+<pre>public&nbsp;void&nbsp;setTerrain(int[]&nbsp;terrain)</pre>
 </li>
 </ul>
 <a name="incrementParachute--">

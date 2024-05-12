@@ -41,17 +41,17 @@ public class App extends PApplet {
     public PImage wind_left;
     public PImage wind_right;
     public PImage parachute;
-    public String fg_color;
+    public String fgColor;
     public int turn;
     public long arrowDisplayTime;
     public int tankCount; 
     public int initialTankCount;
     public boolean scoreDisplayed;
-    public int[] terrain_new = new int[896];
+    public int[] terrainNew = new int[896];
     public ArrayList<Tank> tankArr = new ArrayList<Tank>();
     public ArrayList<Tree> treeArr = new ArrayList<Tree>();
     public int wind = random.nextInt(71) - 35;
-    public boolean teleport_status = false;
+    public boolean teleportStatus = false;
     public boolean airStrikeStatus = false;
     public boolean isGameOver = false;
     public boolean showPowerUp = false;
@@ -101,15 +101,12 @@ public class App extends PApplet {
         }
         frameRate(FPS);
  
-		//See PApplet javadoc:
-		//loadJSONObject(configPath)
-
         JSONObject config = loadJSONObject(this.configPath);
         JSONArray levelArray = config.getJSONArray("levels");
         JSONObject current_level = levelArray.getJSONObject(this.level-1);
 
         this.bg = loadImage("src/main/resources/Tanks/" + current_level.getString("background"));
-        this.fg_color = current_level.getString("foreground-colour");
+        this.fgColor = current_level.getString("foreground-colour");
         this.tree = loadImage("src/main/resources/Tanks/" + current_level.getString("trees", "tree1.png"));
         this.fuel = loadImage("src/main/resources/Tanks/fuel.png");
         this.wind_left = loadImage("src/main/resources/Tanks/wind-1.png");
@@ -131,19 +128,19 @@ public class App extends PApplet {
             Tank t = null;
             switch (i) {
                 case 0:
-                    t = new Tank(0,0, terrain_new, "0,0,255", tankArr, 0, this.wind, (char)(i + 65));
+                    t = new Tank(0,0, terrainNew, "0,0,255", tankArr, 0, this.wind, (char)(i + 65));
                     break;
                 case 1:
-                    t = new Tank(0,0, terrain_new, "255,0,0", tankArr, 0, this.wind, (char)(i + 65));
+                    t = new Tank(0,0, terrainNew, "255,0,0", tankArr, 0, this.wind, (char)(i + 65));
                     break;
                 case 2:
-                    t = new Tank(0,0, terrain_new, "0,255,255", tankArr, 0, this.wind, (char)(i + 65));
+                    t = new Tank(0,0, terrainNew, "0,255,255", tankArr, 0, this.wind, (char)(i + 65));
                     break;
                 case 3:
-                    t = new Tank(0,0, terrain_new, "255,255,0", tankArr, 0, this.wind, (char)(i + 65));
+                    t = new Tank(0,0, terrainNew, "255,255,0", tankArr, 0, this.wind, (char)(i + 65));
                     break;
                 case 4:
-                    t = new Tank(0,0, terrain_new, "0,255,0", tankArr, 0, this.wind, (char)(i + 65));
+                    t = new Tank(0,0, terrainNew, "0,255,0", tankArr, 0, this.wind, (char)(i + 65));
                     break;
                 
                 default:
@@ -151,7 +148,7 @@ public class App extends PApplet {
                     int randomG = random.nextInt(256);
                     int randomB = random.nextInt(256);
                     String c = Integer.toString(randomR) + "," + Integer.toString(randomG) + "," + Integer.toString(randomB);
-                    t = new Tank(0,0, terrain_new, c, tankArr, 0, this.wind, (char)(i + 65));
+                    t = new Tank(0,0, terrainNew, c, tankArr, 0, this.wind, (char)(i + 65));
             }
             tankArr.add(t);
         }
@@ -194,7 +191,6 @@ public class App extends PApplet {
             }
             br.close();
         }
-        
         catch (Exception e){
             e.printStackTrace();;
         }   
@@ -214,7 +210,7 @@ public class App extends PApplet {
                     int end = start + CELLSIZE;
                     for (int i = start; i < end; i++){
                         if (i < 896){
-                            terrain_new[i] = y*CELLSIZE;
+                            terrainNew[i] = y*CELLSIZE;
                         }
                     }
                 } 
@@ -224,17 +220,17 @@ public class App extends PApplet {
 
     /**
      * Smooths the terrain data to create a more visually appealing terrain.
-     * This method calculates the average height of each 32-cell segment and sets all cells in the segment to that height.
-     * It iterates over the terrain data and replaces each segment with its average height.
-     * The method assumes that the terrain data has been transferred to the terrain_new array.
+     * This method calculates the moving average height of each 32-cell segment.
+     * It iterates over the terrain data and replaces each segment with its moving average.
+     * The method assumes that the terrain data has been transferred to the terrainNew array.
      */
     public void smoothTerrain(){
         for (int i = 0; i < 864; i++){
             int counter = 0;
             for (int j = i; j < i + 32; j++){
-                counter += terrain_new[j];
+                counter += terrainNew[j];
             }
-            terrain_new[i] = counter/32;
+            terrainNew[i] = counter/32;
         }
     }
 
@@ -259,7 +255,7 @@ public class App extends PApplet {
 
 
         this.bg = loadImage("src/main/resources/Tanks/" + current_level.getString("background"));
-        this.fg_color = current_level.getString("foreground-colour");
+        this.fgColor = current_level.getString("foreground-colour");
         this.tree = loadImage("src/main/resources/Tanks/" + current_level.getString("trees", "tree1.png"));
 
         loadTerrain(current_level.getString("layout"));    
@@ -301,7 +297,7 @@ public class App extends PApplet {
     /**
      * Provides a fuel power-up to the current tank player if they have enough score points.
      * Increases the player's tank fuel by 200 units.
-     * Deducts the required score points from the player's score.
+     * Deducts 10 score points from the player's score.
      */
 
     public void fuelPowerUp(){
@@ -315,7 +311,7 @@ public class App extends PApplet {
     /**
      * Provides a parachute power-up to the current tank player if they have enough score points.
      * Increments the number of parachutes available to the player.
-     * Deducts the required score points from the player's score.
+     * Deducts 15 score points from the player's score.
      */
 
     public void parachutePowerUp(){
@@ -329,14 +325,14 @@ public class App extends PApplet {
     /**
      * Activates a teleportation power-up for the current tank player if they have enough score points.
      * Allows the player to select an X coordinate to teleport their tank to.
-     * Deducts the required score points from the player's score.
+     * Deducts 50 score points from the player's score.
      */
 
     public void teleportPowerUp(){
         int score = tankArr.get(turn - 1).getScore();
         if (score >= 15){
             tankArr.get(turn - 1).setScore(score - 15);
-            teleport_status = true;
+            teleportStatus = true;
         }
 
     }
@@ -491,12 +487,12 @@ public class App extends PApplet {
     public void mousePressed(MouseEvent e) {
         // TODO - powerups, like repair and extra fuel and teleport
         if (isGameOver == false){
-            if (teleport_status){
+            if (teleportStatus){
                 int x = mouseX;
     
                 tankArr.get(turn - 1).x = x;
-                tankArr.get(turn - 1).y = terrain_new[x];
-                teleport_status = false;
+                tankArr.get(turn - 1).y = terrainNew[x];
+                teleportStatus = false;
             }
     
             if(airStrikeStatus){
@@ -529,8 +525,8 @@ public class App extends PApplet {
         setColor(color);
    
         for (int x = 0; x < 864; x++){
-            if(terrain_new[x] != 0){
-                rect(x, terrain_new[x], 1, HEIGHT - terrain_new[x]);
+            if(terrainNew[x] != 0){
+                rect(x, terrainNew[x], 1, HEIGHT - terrainNew[x]);
                 noStroke();
             }
         }
@@ -557,7 +553,7 @@ public class App extends PApplet {
                     if (randomTreeLocation > 864){
                         randomTreeLocation = 864;
                     }
-                    Tree t = new Tree(randomTreeLocation - CELLHEIGHT/2 , terrain_new[randomTreeLocation] - CELLHEIGHT, this.tree, terrain_new);
+                    Tree t = new Tree(randomTreeLocation - CELLHEIGHT/2 , terrainNew[randomTreeLocation] - CELLHEIGHT, this.tree, terrainNew);
                     treeArr.add(t);
                 }
                 else if ((int) terrain[x][y] >= 65 && (int) terrain[x][y] <= 73){
@@ -565,7 +561,7 @@ public class App extends PApplet {
 
                     //Adding tanks to tank array
                     tankArr.get((int) terrain[x][y] - 65).x = x_pixel;
-                    tankArr.get((int) terrain[x][y] - 65).y = terrain_new[x_pixel];
+                    tankArr.get((int) terrain[x][y] - 65).y = terrainNew[x_pixel];
                     tankArr.get((int) terrain[x][y] - 65).setID((int) terrain[x][y] - 65 + 1);
                 }   
             }
@@ -682,10 +678,10 @@ public class App extends PApplet {
         }
 
         // tankArr.get(turn-1).tick(this);
-        tankArr.get(turn-1).setTerrain(terrain_new);
+        tankArr.get(turn-1).setTerrain(terrainNew);
         
         for (int i = 0; i < treeArr.size(); i++){
-            treeArr.get(i).setTerrain(terrain_new);
+            treeArr.get(i).setTerrain(terrainNew);
             treeArr.get(i).tick();
             treeArr.get(i).draw(this);
         }
@@ -799,12 +795,13 @@ public class App extends PApplet {
     public void draw() {
 
         this.image(this.bg,0,0);
-        drawTerrain(this.fg_color);
+        drawTerrain(this.fgColor);
        
-        if (teleport_status){
+        if (teleportStatus){
             textSize(20);
             fill(0,0,0);
             text("SELECT X VALUE TO TELEPORT TO", 270, 200);
+            text("(CLICK ON SCREEN)", 330, 230);
             textSize(12);
         }
 
@@ -812,13 +809,14 @@ public class App extends PApplet {
             textSize(20);
             fill(0,0,0);
             text("SELECT X VALUE TO LAUNCH AIRSTRIKE AT", 220, 200);
+            text("(CLICK ON SCREEN)", 330, 230);
             textSize(12);
         }
 
         this.tick();
 
         if (isGameOver){
-            displayScore();            
+            displayScore();
         }
     }
 
@@ -827,7 +825,7 @@ public class App extends PApplet {
     }
     
     public int[] getTerrain(){
-        return terrain_new;
+        return terrainNew;
     }
 
     public static void main(String[] args) {

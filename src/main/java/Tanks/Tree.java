@@ -9,9 +9,9 @@ import processing.core.PImage;
  */
 public class Tree{
 
-    public int x;
-    public int y;
-    public PImage sprite;
+    private int x;
+    private int y;
+    private PImage sprite;
     private int[] terrain;
     private int CELLHEIGHT = 32;
 

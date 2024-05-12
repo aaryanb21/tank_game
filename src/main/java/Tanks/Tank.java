@@ -5,7 +5,7 @@ import processing.core.PApplet;
 
 /**
  * The Tank class represents a tank object in a game environment.
- * Tanks have attributes such as position, velocity, health, fuel, power, and score,
+ * Tanks have attributes such as position, bullet velocity, health, fuel, power, and score,
  * and can perform actions like movement, shooting, and airstrikes.
  */
 public class Tank implements Comparable<Tank>{
@@ -18,7 +18,7 @@ public class Tank implements Comparable<Tank>{
     public float rotateAngle;
     private int rotateAngleVel;
     public ArrayList<Bullet> bullets;
-    private int[] terrain_new;
+    private int[] terrainNew;
     private String color;
     private ArrayList<Tank> tanks;
     private int score;
@@ -37,14 +37,14 @@ public class Tank implements Comparable<Tank>{
      *
      * @param x          The initial X-coordinate of the tank.
      * @param y          The initial Y-coordinate of the tank.
-     * @param terrain_new The terrain information.
+     * @param terrainNew The terrain information.
      * @param color      The color of the tank.
      * @param tanks      The list of all tanks in the game.
      * @param tankID     The unique ID of the tank.
      * @param wind       The wind speed.
      * @param name       The name of the tank.
      */
-    public Tank(int x, int y, int[] terrain_new, String color, ArrayList<Tank> tanks, int tankID, int wind, char name){
+    public Tank(int x, int y, int[] terrainNew, String color, ArrayList<Tank> tanks, int tankID, int wind, char name){
         this.x = x;
         this.y = y;
         this.xVel = 0;
@@ -54,7 +54,7 @@ public class Tank implements Comparable<Tank>{
         this.rotateAngle = 0;
         this.rotateAngleVel = 0;
         this.bullets = new ArrayList<Bullet>();
-        this.terrain_new = terrain_new;
+        this.terrainNew = terrainNew;
         this.color = color;
         this.tanks = tanks;
         this.score = 0;
@@ -112,7 +112,7 @@ public class Tank implements Comparable<Tank>{
         if (this.rotateAngle < -90){
             this.rotateAngle = -90;
             }
-        if (this.y < terrain_new[this.x] && this.xVel == 0){
+        if (this.y < terrainNew[this.x] && this.xVel == 0){
             if (this.parachutes >= 1 || this.parachutes == 0 && this.parachuteDeployed == true){
                 this.y += 2;
                 if (this.parachuteDeployed == false){
@@ -131,7 +131,7 @@ public class Tank implements Comparable<Tank>{
         }
         else{
             this.parachuteDeployed = false;
-            this.y = this.terrain_new[this.x];
+            this.y = this.terrainNew[this.x];
             if (this.fallDamage > this.health){
                 this.fallDamage = this.health;
             }
@@ -140,17 +140,18 @@ public class Tank implements Comparable<Tank>{
                 this.fellBy.setScore(this.fellBy.getScore() + fallDamage);
             }
             this.fallDamage = 0;
+        }
+        if (this.score < 0){
+            this.score = 0;
         }       
     }
 
     /**
      * Initiates an explosion by creating a bullet at the tank's position.
-     * The explosion occurs when the tank's y-coordinate exceeds a certain threshold,
-     * typically indicating that the tank has fallen off the terrain.
-     * The bullet created represents the explosion effect.
+     * The explosion occurs when the tank's y-coordinate exceeds a certain threshold or hits something.
      */
     public void explode(){
-        bullets.add(new Bullet(this.x + 9 - 5, this.y - 5, this.power, Math.abs(this.rotateAngle - 90 + 3), this.terrain_new, this.color, this.tanks, this.tankID, this.wind));
+        bullets.add(new Bullet(this.x + 9 - 5, this.y - 5, this.power, Math.abs(this.rotateAngle - 90 + 3), this.terrainNew, this.color, this.tanks, this.tankID, this.wind));
         bullets.get(bullets.size() - 1).explode(this.x, this.y);
     }
 
@@ -188,6 +189,7 @@ public class Tank implements Comparable<Tank>{
             e.tick();
             e.draw(app);
         }
+
     }
 
     /**
@@ -251,7 +253,7 @@ public class Tank implements Comparable<Tank>{
      * The bullet inherits the tank's position, angle, and other properties.
      */
     public void shoot(){
-        bullets.add(new Bullet(this.x + 9 - 7, this.y - 5, this.power, Math.abs(this.rotateAngle - 90 + 3), this.terrain_new, this.color, this.tanks, this.tankID, this.wind));
+        bullets.add(new Bullet(this.x + 9 - 7, this.y - 5, this.power, Math.abs(this.rotateAngle - 90 + 2), this.terrainNew, this.color, this.tanks, this.tankID, this.wind));
     }
 
     /**
@@ -261,7 +263,7 @@ public class Tank implements Comparable<Tank>{
      * @param x The x-coordinate at which to initiate the airstrike.
      */
     public void airStrikePowerUp(int x){
-        bullets.add(new Bullet(x, 5, 50, 270, this.terrain_new, this.color, this.tanks, this.tankID, this.wind));
+        bullets.add(new Bullet(x, 5, 50, 270, this.terrainNew, this.color, this.tanks, this.tankID, this.wind));
     }
 
     /**
@@ -293,16 +295,12 @@ public class Tank implements Comparable<Tank>{
         }
     }
 
-    public void setTerrain(int[] terrain){
-        this.terrain_new = terrain;
-    }
-
     /**
      * Increases the power of the tank's shots.
      * Power is capped at the tank's health level.
      */
     public void increasePower(){
-        this.power += 1.2;
+        this.power += 1.8;
         if (this.power > this.health){
             this.power = this.health;
         }
@@ -313,7 +311,7 @@ public class Tank implements Comparable<Tank>{
      * Power cannot go below zero.
      */
     public void decreasePower(){
-        this.power -= 1.2;
+        this.power -= 1.8;
         if (this.power < 0){
             this.power = 0;
         }
@@ -321,7 +319,7 @@ public class Tank implements Comparable<Tank>{
 
     /**
      * Resets the tank's attributes to their default values.
-     * Used when respawning the tank or starting a new game.
+     * Used when respawning the tank or starting a new level.
      */
     public void resetValues(){  
         this.health = 100;
@@ -331,6 +329,10 @@ public class Tank implements Comparable<Tank>{
         this.fuel = 250;
         this.bullets.clear();
         this.e = null;
+    }
+
+    public void setTerrain(int[] terrain){
+        this.terrainNew = terrain;
     }
 
     public void incrementParachute(){

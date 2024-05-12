@@ -128,27 +128,19 @@ public class TestCases {
         app.keyPressed(k);
         assertTrue(app.tankArr.get(app.turn - 1).getxVel() > 0); //Making sure right key makes tank move
 
-        
-
         app.keyPressed = true;
         app.keyCode = PApplet.LEFT;
         app.key = PApplet.CODED;
 
         app.keyPressed(k);
         assertTrue(app.tankArr.get(app.turn - 1).getxVel() < 0); //Making sure left key makes tank move
-        
-
-
+    
         app.keyPressed = true;
         app.keyCode = PApplet.UP;
         app.key = PApplet.CODED;
 
         app.keyPressed(k);
         assertTrue(app.tankArr.get(app.turn - 1).getRotateAngleVel() != 0); //Making sure turret key makes turret move
-
-
-
-
 
         app.keyPressed = true;
         app.keyCode = PApplet.DOWN;
@@ -157,9 +149,17 @@ public class TestCases {
         app.keyPressed(k);
         assertTrue(app.tankArr.get(app.turn - 1).getRotateAngleVel() != 0); //Making sure turret key makes turret move
 
-
         app.keyReleased();
         assertTrue(app.tankArr.get(0).getxVel() != 0); //Checking if tank did not stop by any random key being released
+
+        app.tankArr.get(0).setFuel(0);
+        app.tankArr.get(0).moveLeft();
+        assertTrue(app.tankArr.get(0).getxVel() == 0); //Ensuring tank does not move on 0 fuel
+
+        app.tankArr.get(0).x = 1;
+        app.tick();
+        assertTrue(app.tankArr.get(0).x == 2); //Ensuring tank cannot go out of bounds
+
     }
 
     @Test
@@ -173,17 +173,17 @@ public class TestCases {
         Tank t = app.tankArr.get(0);
         t.incrementParachute(); //Giving tank parachute if it does not have 
 
-        Arrays.fill(app.terrain_new, 100); //Making a simpleified flat terrain
+        Arrays.fill(app.terrainNew, 100); //Making a simpleified flat terrain
         t.x = 50;
-        t.y = app.terrain_new[t.x];
+        t.y = app.terrainNew[t.x];
 
-        Arrays.fill(app.terrain_new, 150); //Destroying terrain below tank
+        Arrays.fill(app.terrainNew, 150); //Destroying terrain below tank
         t.tick(app);
         assertTrue(t.y > 100); //Ensuring the y value has increased 
         assertTrue(t.isParachuteDeployed());
 
         t.setParachutes(0);
-        Arrays.fill(app.terrain_new, 200); //Destroying terrain below tank
+        Arrays.fill(app.terrainNew, 200); //Destroying terrain below tank
         t.tick(app);
         assertTrue(t.y > 100); //Ensuring the y value has increased again 
         assertTrue(t.isParachuteDeployed()); //Tank keeps using parachute from same fall even though parachute count changed to 0 mid fall.
@@ -237,14 +237,12 @@ public class TestCases {
         MouseEvent m = new MouseEvent(app, 0, 0, 0, 0, 0, 0, 0);
         app.isGameOver = false; //Making sure game is not over 
         app.teleportPowerUp();
-        assertTrue(app.teleport_status == true); //Checking if powerup worked 
-        
-        app.mousePressed(m);
+        assertTrue(app.teleportStatus == true); //Checking if powerup worked 
         app.mouseX = 2;
+        app.mousePressed(m);
         app.tick();
-        app.tankArr.get(0).y = app.terrain_new[app.tankArr.get(0).x];
+        app.tankArr.get(0).y = app.terrainNew[app.tankArr.get(0).x];
         assertEquals(2, app.tankArr.get(0).x); //Checking if first tanks position is where the mouse was clicked.
-
         app.turn = 1; //Making it first players turn
         app.tankArr.get(app.turn - 1).setScore(50); //Setting enough score to call powerup
 
@@ -257,9 +255,6 @@ public class TestCases {
         app.mouseX = 2;
         app.tick();
         assertTrue(app.tankArr.get(app.turn - 1).bullets.size() != 0); //Checking if first tanks position is where the mouse was clicked.
-
-
-
     }
 
     @Test
@@ -368,7 +363,14 @@ public class TestCases {
   
         app.tick();
         assertTrue(app.showPowerUp); //Box only displays when this flag is true
+    }
 
+    @Test
+    void testPowerUpDisplay(){
+        App app = new App();
+        PApplet.runSketch(new String[] { "App" }, app);
+        app.setup();
+        app.delay(1000);
     }
 
 

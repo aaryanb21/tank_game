@@ -126,24 +126,20 @@ public class Bullet{
     public void explode(int x, int y){    
 <span class="fc bfc" id="L127" title="All 2 branches covered.">        for (int i = (int)this.x - BLAST_RADIUS; i &lt; this.x + BLAST_RADIUS; i++) {</span>
 <span class="fc bfc" id="L128" title="All 2 branches covered.">            for (int j = (int)this.y - BLAST_RADIUS; j &lt; this.y + BLAST_RADIUS; j++) {</span>
-                // Ensure the indices are within the bounds of the terrain array
-<span class="pc bpc" id="L130" title="2 of 8 branches missed.">                if (i &gt;= 0 &amp;&amp; i &lt; this.terrain.length &amp;&amp; j &gt;= 0 &amp;&amp; j &gt; this.terrain[i]) {</span>
-                    // Calculate distance from the explosion point
-<span class="fc" id="L132">                    float distance = dist(x, y, i, j);</span>
-                    // If within blast radius, update terrain
-<span class="fc bfc" id="L134" title="All 2 branches covered.">                    if (distance &lt;= BLAST_RADIUS) {</span>
-                        // Update the terrain height at position i
-<span class="fc" id="L136">                        terrain[i] += BLAST_RADIUS - distance;</span>
+<span class="pc bpc" id="L129" title="2 of 8 branches missed.">                if (i &gt;= 0 &amp;&amp; i &lt; this.terrain.length &amp;&amp; j &gt;= 0 &amp;&amp; j &gt; this.terrain[i]) {</span>
+<span class="fc" id="L130">                    float distance = dist(x, y, i, j);</span>
+<span class="fc bfc" id="L131" title="All 2 branches covered.">                    if (distance &lt;= BLAST_RADIUS) {</span>
+<span class="fc" id="L132">                        terrain[i] += BLAST_RADIUS - distance;</span>
                     }
                 }
             }
         }
 
-<span class="fc" id="L142">        updateTankHealth((int)this.x, (int)this.y);</span>
+<span class="fc" id="L138">        updateTankHealth((int)this.x, (int)this.y);</span>
 
         //Makes isOffScreen true so bullet disappears
-<span class="fc" id="L145">        this.offScreen = true;</span>
-<span class="fc" id="L146">    }</span>
+<span class="fc" id="L141">        this.offScreen = true;</span>
+<span class="fc" id="L142">    }</span>
 
     /**
      * Updates the health of tanks affected by the explosion.
@@ -152,26 +148,26 @@ public class Bullet{
      * @param y The Y-coordinate of the explosion point.
      */
     public void updateTankHealth(int x, int y){
-<span class="fc bfc" id="L155" title="All 2 branches covered.">        for (Tank tanks : this.tanks){</span>
-<span class="fc bfc" id="L156" title="All 2 branches covered.">            if (dist((int)this.x, (int)this.y, tanks.x, tanks.y) &lt;= 30){</span>
-<span class="fc" id="L157">                int damage = 60 - (2 * (int)dist((int)this.x, (int)this.y, tanks.x + 4 , tanks.y));</span>
-<span class="fc" id="L158">                int newHealth = tanks.getHealth() - damage;</span>
-<span class="fc" id="L159">                tanks.setHealth(newHealth);</span>
-<span class="pc bpc" id="L160" title="1 of 2 branches missed.">                if (tanks.getID() != this.bulletID){</span>
-<span class="nc" id="L161">                    this.score += damage;</span>
+<span class="fc bfc" id="L151" title="All 2 branches covered.">        for (Tank tanks : this.tanks){</span>
+<span class="fc bfc" id="L152" title="All 2 branches covered.">            if (dist((int)this.x, (int)this.y, tanks.x, tanks.y) &lt;= 30){</span>
+<span class="fc" id="L153">                int damage = 60 - (2 * (int)dist((int)this.x, (int)this.y, tanks.x + 4 , tanks.y-2));</span>
+<span class="fc" id="L154">                int newHealth = tanks.getHealth() - damage;</span>
+<span class="fc" id="L155">                tanks.setHealth(newHealth);</span>
+<span class="pc bpc" id="L156" title="1 of 2 branches missed.">                if (tanks.getID() != this.bulletID){</span>
+<span class="nc" id="L157">                    this.score += damage;</span>
                 }
             }
-<span class="fc bfc" id="L164" title="All 2 branches covered.">            if (Math.abs(this.x - tanks.x) &lt;= 30){</span>
-<span class="fc" id="L165">                Tank t = null;</span>
-<span class="fc bfc" id="L166" title="All 2 branches covered.">                for (int i = 0; i &lt; this.tanks.size(); i++){</span>
-<span class="fc bfc" id="L167" title="All 2 branches covered.">                    if (this.bulletID == this.tanks.get(i).getID()){</span>
-<span class="fc" id="L168">                        t = this.tanks.get(i);</span>
+<span class="fc bfc" id="L160" title="All 2 branches covered.">            if (Math.abs(this.x - tanks.x) &lt;= 30){</span>
+<span class="fc" id="L161">                Tank t = null;</span>
+<span class="fc bfc" id="L162" title="All 2 branches covered.">                for (int i = 0; i &lt; this.tanks.size(); i++){</span>
+<span class="fc bfc" id="L163" title="All 2 branches covered.">                    if (this.bulletID == this.tanks.get(i).getID()){</span>
+<span class="fc" id="L164">                        t = this.tanks.get(i);</span>
                     }
                 }
-<span class="fc" id="L171">                tanks.setFellBy(t);</span>
+<span class="fc" id="L167">                tanks.setFellBy(t);</span>
             }
-<span class="fc" id="L173">         }</span>
-<span class="fc" id="L174">    }</span>
+<span class="fc" id="L169">         }</span>
+<span class="fc" id="L170">    }</span>
 
 
     /**
@@ -185,17 +181,17 @@ public class Bullet{
      */
     public float dist(int x1, int y1, int x2, int y2) {
         // Calculate the horizontal and vertical differences between the points
-<span class="fc" id="L188">        float dx = x2 - x1;</span>
-<span class="fc" id="L189">        float dy = y2 - y1;</span>
+<span class="fc" id="L184">        float dx = x2 - x1;</span>
+<span class="fc" id="L185">        float dy = y2 - y1;</span>
         
         // Use the Pythagorean theorem to find the distance
-<span class="fc" id="L192">        float distance = (float) sqrt(dx * dx + dy * dy);</span>
+<span class="fc" id="L188">        float distance = (float) sqrt(dx * dx + dy * dy);</span>
         
-<span class="fc" id="L194">        return distance;</span>
+<span class="fc" id="L190">        return distance;</span>
     }
 
     public int getScore(){
-<span class="fc" id="L198">        return this.score;</span>
+<span class="fc" id="L194">        return this.score;</span>
     }
     
 }

@@ -187,7 +187,7 @@ extends processing.core.PApplet</pre>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>java.lang.String</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../Tanks/App.html#fg_color">fg_color</a></span></code>&nbsp;</td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../Tanks/App.html#fgColor">fgColor</a></span></code>&nbsp;</td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>static int</code></td>
@@ -251,7 +251,7 @@ extends processing.core.PApplet</pre>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>boolean</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../Tanks/App.html#teleport_status">teleport_status</a></span></code>&nbsp;</td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../Tanks/App.html#teleportStatus">teleportStatus</a></span></code>&nbsp;</td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>char[][]</code></td>
@@ -259,7 +259,7 @@ extends processing.core.PApplet</pre>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>int[]</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../Tanks/App.html#terrain_new">terrain_new</a></span></code>&nbsp;</td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../Tanks/App.html#terrainNew">terrainNew</a></span></code>&nbsp;</td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>static int</code></td>
@@ -735,13 +735,13 @@ extends processing.core.PApplet</pre>
 <pre>public&nbsp;processing.core.PImage parachute</pre>
 </li>
 </ul>
-<a name="fg_color">
+<a name="fgColor">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
-<h4>fg_color</h4>
-<pre>public&nbsp;java.lang.String fg_color</pre>
+<h4>fgColor</h4>
+<pre>public&nbsp;java.lang.String fgColor</pre>
 </li>
 </ul>
 <a name="turn">
@@ -789,13 +789,13 @@ extends processing.core.PApplet</pre>
 <pre>public&nbsp;boolean scoreDisplayed</pre>
 </li>
 </ul>
-<a name="terrain_new">
+<a name="terrainNew">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
-<h4>terrain_new</h4>
-<pre>public&nbsp;int[] terrain_new</pre>
+<h4>terrainNew</h4>
+<pre>public&nbsp;int[] terrainNew</pre>
 </li>
 </ul>
 <a name="tankArr">
@@ -825,13 +825,13 @@ extends processing.core.PApplet</pre>
 <pre>public&nbsp;int wind</pre>
 </li>
 </ul>
-<a name="teleport_status">
+<a name="teleportStatus">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
-<h4>teleport_status</h4>
-<pre>public&nbsp;boolean teleport_status</pre>
+<h4>teleportStatus</h4>
+<pre>public&nbsp;boolean teleportStatus</pre>
 </li>
 </ul>
 <a name="airStrikeStatus">
@@ -999,9 +999,9 @@ extends processing.core.PApplet</pre>
 <h4>smoothTerrain</h4>
 <pre>public&nbsp;void&nbsp;smoothTerrain()</pre>
 <div class="block">Smooths the terrain data to create a more visually appealing terrain.
- This method calculates the average height of each 32-cell segment and sets all cells in the segment to that height.
- It iterates over the terrain data and replaces each segment with its average height.
- The method assumes that the terrain data has been transferred to the terrain_new array.</div>
+ This method calculates the moving average height of each 32-cell segment.
+ It iterates over the terrain data and replaces each segment with its moving average.
+ The method assumes that the terrain data has been transferred to the terrainNew array.</div>
 </li>
 </ul>
 <a name="loadLevel--">
@@ -1037,7 +1037,7 @@ extends processing.core.PApplet</pre>
 <pre>public&nbsp;void&nbsp;fuelPowerUp()</pre>
 <div class="block">Provides a fuel power-up to the current tank player if they have enough score points.
  Increases the player's tank fuel by 200 units.
- Deducts the required score points from the player's score.</div>
+ Deducts 10 score points from the player's score.</div>
 </li>
 </ul>
 <a name="parachutePowerUp--">
@@ -1049,7 +1049,7 @@ extends processing.core.PApplet</pre>
 <pre>public&nbsp;void&nbsp;parachutePowerUp()</pre>
 <div class="block">Provides a parachute power-up to the current tank player if they have enough score points.
  Increments the number of parachutes available to the player.
- Deducts the required score points from the player's score.</div>
+ Deducts 15 score points from the player's score.</div>
 </li>
 </ul>
 <a name="teleportPowerUp--">
@@ -1061,7 +1061,7 @@ extends processing.core.PApplet</pre>
 <pre>public&nbsp;void&nbsp;teleportPowerUp()</pre>
 <div class="block">Activates a teleportation power-up for the current tank player if they have enough score points.
  Allows the player to select an X coordinate to teleport their tank to.
- Deducts the required score points from the player's score.</div>
+ Deducts 50 score points from the player's score.</div>
 </li>
 </ul>
 <a name="airStrikePowerUp--">
